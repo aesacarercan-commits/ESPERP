@@ -1,0 +1,6 @@
+{
+  "name": "Enterprise Resource Planner",
+  "description": "A comprehensive and modern ERP platform to manage inventory, sales, invoicing, work orders, manufacturing processes, and employee payroll in a unified dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
