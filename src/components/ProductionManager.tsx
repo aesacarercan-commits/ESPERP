@@ -142,7 +142,7 @@ export default function ProductionManager({
           <div className="flex items-center justify-between gap-1.5 leading-tight">
             <span className="capitalize">{step.baseStepName || (step.name.includes(' - ') ? step.name.split(' - ')[1] : step.name)}</span>
             {step.completedBy && (
-              <span className="text-[8px] bg-emerald-50 dark:bg-emerald-955/20 text-emerald-600 dark:text-emerald-400 border border-emerald-100 px-1 py-0.2 rounded-sm font-bold" title={`Onaylayan: ${step.completedBy}`}>
+              <span className="text-[8px] bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/50 px-1 py-0.2 rounded-sm font-bold" title={`Onaylayan: ${step.completedBy}`}>
                 ✓ {step.completedBy.split(' ')[0]}
               </span>
             )}
@@ -253,7 +253,7 @@ export default function ProductionManager({
                 type="number" 
                 min="1" 
                 required
-                className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-705 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none text-slate-855 dark:text-white font-bold"
+                className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none text-slate-800 dark:text-white font-bold"
                 value={newOrder.qty}
                 onChange={e => setNewOrder(prev => ({ ...prev, qty: parseInt(e.target.value) || 0 }))}
               />
@@ -266,7 +266,7 @@ export default function ProductionManager({
               <input 
                 type="date" 
                 required
-                className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-705 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none text-slate-855 dark:text-white font-mono font-bold"
+                className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none text-slate-800 dark:text-white font-mono font-bold"
                 value={newOrder.targetDate}
                 onChange={e => setNewOrder(prev => ({ ...prev, targetDate: e.target.value }))}
               />
@@ -277,7 +277,7 @@ export default function ProductionManager({
                 {currentLang === 'tr' ? 'Öncelik Derecesi' : 'Priority Level'} *
               </label>
               <select 
-                className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-705 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none font-bold text-slate-800 dark:text-white"
+                className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none font-bold text-slate-800 dark:text-white"
                 value={newOrder.priority}
                 onChange={e => setNewOrder(prev => ({ ...prev, priority: e.target.value as any }))}
               >
@@ -295,7 +295,7 @@ export default function ProductionManager({
             <textarea 
               rows={2}
               placeholder="Specify requirements, raw material sources, and precision specs here..." 
-              className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-705 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none text-slate-850 dark:text-white font-bold text-xs"
+              className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none text-slate-800 dark:text-white font-bold text-xs"
               value={newOrder.notes}
               onChange={e => setNewOrder(prev => ({ ...prev, notes: e.target.value }))}
             />
@@ -351,7 +351,7 @@ export default function ProductionManager({
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-xl shadow-sm flex flex-col md:flex-row md:items-center gap-4 text-xs">
             
             {/* Simple Search bar */}
-            <div className="flex-1 flex items-center bg-slate-50 dark:bg-slate-955 border border-slate-200 dark:border-slate-800 py-2 px-3 rounded-lg">
+            <div className="flex-1 flex items-center bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 py-2 px-3 rounded-lg">
               <Search className="w-4 h-4 text-slate-400 mr-2 shrink-0" />
               <input 
                 type="text" 
@@ -381,7 +381,7 @@ export default function ProductionManager({
               <div className="flex items-center gap-1.5 font-bold">
                 <span className="text-slate-400 uppercase tracking-widest text-[9px]">{currentLang === 'tr' ? 'Statü' : 'Status'}:</span>
                 <select 
-                  className="bg-slate-50 dark:bg-slate-955 border border-slate-200 dark:border-slate-800 font-bold px-2 py-1.5 rounded-lg outline-none text-slate-800 dark:text-white"
+                  className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-bold px-2 py-1.5 rounded-lg outline-none text-slate-800 dark:text-white"
                   value={statusFilter}
                   onChange={e => setStatusFilter(e.target.value)}
                 >
@@ -550,7 +550,7 @@ export default function ProductionManager({
                     <div className="space-y-1">
                       <label className="text-slate-400 uppercase tracking-widest text-[9px] font-bold block">{currentLang === 'tr' ? 'Emir Durumu' : 'Release Status'}</label>
                       <select 
-                        className="w-full bg-slate-50 dark:bg-slate-955 border border-slate-200 dark:border-slate-800 px-3 py-2 rounded-xl text-slate-850 dark:text-white font-black"
+                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-2 rounded-xl text-slate-800 dark:text-white font-black"
                         value={curOrder.status}
                         onChange={(e) => onUpdateOrderStatus(curOrder.id, e.target.value as any)}
                       >
@@ -644,7 +644,7 @@ export default function ProductionManager({
         /* Render full width interactive project planner Gantt twin of the Excel graphic sheet input */
         activeOrder ? (
           <div className="space-y-4 animate-in fade-in duration-300">
-            <div className="bg-white dark:bg-slate-905 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xs overflow-hidden">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xs overflow-hidden">
               
               {/* Header section with selections */}
               <div className="p-4 bg-slate-50/50 dark:bg-slate-950/40 border-b border-slate-200 dark:border-slate-800 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -672,7 +672,7 @@ export default function ProductionManager({
                       onChange={(e) => {
                         setSelectedOrderId(e.target.value);
                       }}
-                      className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-850 dark:text-white outline-none min-w-[200px]"
+                      className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-800 dark:text-white outline-none min-w-[200px]"
                     >
                       {workOrders.map(wo => (
                         <option key={wo.id} value={wo.id}>
@@ -685,7 +685,7 @@ export default function ProductionManager({
                   <div className="space-y-1 text-left row-auto">
                     <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Aktif İmzacı Operatör:</label>
                     <select
-                      className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-850 dark:text-white outline-none"
+                      className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-800 dark:text-white outline-none"
                       value={activeOperator}
                       onChange={(e) => setActiveOperator(e.target.value)}
                     >
@@ -696,7 +696,7 @@ export default function ProductionManager({
                   </div>
                   
                   {/* Color annotations legend */}
-                  <div className="hidden lg:flex items-center gap-2.5 text-[9.5px] bg-slate-50 dark:bg-slate-950 px-2.5 py-1.5 rounded-lg border border-slate-200/50 dark:border-slate-850 self-end">
+                  <div className="hidden lg:flex items-center gap-2.5 text-[9.5px] bg-slate-50 dark:bg-slate-950 px-2.5 py-1.5 rounded-lg border border-slate-200/50 dark:border-slate-800 self-end">
                     <div className="flex items-center gap-1 font-bold">
                       <span className="w-2.5 h-2.5 rounded-full bg-[#e76f51] inline-block"></span>
                       <span className="text-slate-500 dark:text-slate-400">Tamamlandı</span>
@@ -715,15 +715,15 @@ export default function ProductionManager({
 
               {/* Stat rows summary */}
               <div className="grid grid-cols-2 md:grid-cols-4 border-b border-slate-200 dark:border-slate-800 text-xs font-medium bg-slate-50/20 dark:bg-slate-950/10">
-                <div className="p-3 border-r border-slate-205 dark:border-slate-800 text-left">
+                <div className="p-3 border-r border-slate-200 dark:border-slate-800 text-left">
                   <span className="text-slate-400 text-[9px] uppercase tracking-widest block font-bold mb-0.5">Miktar</span>
                   <span className="text-sm font-black text-slate-800 dark:text-white">{activeOrder.qty} Adet (Poli)</span>
                 </div>
-                <div className="p-3 border-r border-slate-205 dark:border-slate-800 text-left">
+                <div className="p-3 border-r border-slate-200 dark:border-slate-800 text-left">
                   <span className="text-slate-400 text-[9px] uppercase tracking-widest block font-bold mb-0.5">Planlanan Hedef</span>
                   <span className="text-xs font-extrabold text-[#e76f51]">{activeOrder.priority === 'High' ? 'YÜKSEK ÖNCELİK' : 'ORTA ÖNCELİK'}</span>
                 </div>
-                <div className="p-3 border-r border-slate-205 dark:border-slate-800 text-left">
+                <div className="p-3 border-r border-slate-200 dark:border-slate-800 text-left">
                   <span className="text-slate-400 text-[9px] uppercase tracking-widest block font-bold mb-0.5">Bitiş Tarihi</span>
                   <span className="text-xs font-bold text-slate-800 dark:text-white font-mono">{activeOrder.targetDate}</span>
                 </div>
@@ -739,7 +739,7 @@ export default function ProductionManager({
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse text-left text-xs min-w-[950px] font-sans">
                   <thead>
-                    <tr className="bg-slate-100 dark:bg-slate-955 text-slate-700 dark:text-slate-200 border-b border-slate-200 dark:border-slate-800">
+                    <tr className="bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-200 border-b border-slate-200 dark:border-slate-800">
                       <th className="border border-slate-200 dark:border-slate-800 p-3 font-extrabold w-[250px] uppercase tracking-wider text-[11px] text-slate-800 dark:text-white">
                         ETKİNLİK
                       </th>
@@ -747,7 +747,7 @@ export default function ProductionManager({
                         sıralama
                       </th>
                     </tr>
-                    <tr className="bg-slate-50 dark:bg-slate-900 border-b border-slate-150 dark:border-slate-800 text-center">
+                    <tr className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-center">
                       <th className="border border-slate-200 dark:border-slate-800 p-2 text-slate-400 font-bold uppercase tracking-wider text-[10px] text-left">
                         İŞ TÜRÜ RAPORLARI
                       </th>
