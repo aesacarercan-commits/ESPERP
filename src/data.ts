@@ -1,4 +1,4 @@
-import { Product, Invoice, WorkOrder, Employee, ERPConfig } from './types';
+import { Product, Invoice, WorkOrder, Employee, ERPConfig, CRMContact, CRMOpportunity, CRMInteraction } from './types';
 
 export const INITIAL_PRODUCTS: Product[] = [
   {
@@ -146,11 +146,28 @@ export const INITIAL_WORK_ORDERS: WorkOrder[] = [
     priority: 'High',
     status: 'In_Progress',
     steps: [
-      { id: 'step-1', name: 'Material Prep & Cutting', status: 'Completed', completedAt: '2026-05-19T09:00:00Z', completedBy: 'Marcus Sterling' },
-      { id: 'step-2', name: 'Precision CNC Mill', status: 'Completed', completedAt: '2026-05-19T14:30:00Z', completedBy: 'Marcus Sterling' },
-      { id: 'step-3', name: 'TIG Welding & Fusion', status: 'In_Progress' },
-      { id: 'step-4', name: 'X-Ray Alignment & QC', status: 'Pending' },
-      { id: 'step-5', name: 'ESD Protective Coating', status: 'Pending' }
+      { id: 'kg-kesim', name: 'Kapak&Gövde - kesim', baseStepName: 'kesim', category: 'Kapak&Gövde', columns: [1], status: 'Completed', completedAt: '2026-05-19T09:00:00Z', completedBy: 'Marcus Sterling' },
+      { id: 'kg-bukum', name: 'Kapak&Gövde - büküm', baseStepName: 'büküm', category: 'Kapak&Gövde', columns: [2, 3], status: 'Completed', completedAt: '2026-05-19T14:30:00Z', completedBy: 'Marcus Sterling' },
+      { id: 'kg-catim', name: 'Kapak&Gövde - çatım', baseStepName: 'çatım', category: 'Kapak&Gövde', columns: [3, 4], status: 'In_Progress' },
+      { id: 'kg-tas1', name: 'Kapak&Gövde - taş (Temizlik)', baseStepName: 'taş', category: 'Kapak&Gövde', columns: [4, 5], status: 'Pending' },
+      { id: 'kg-kaynak', name: 'Kapak&Gövde - kaynak', baseStepName: 'kaynak', category: 'Kapak&Gövde', columns: [5, 6], status: 'Pending' },
+      { id: 'kg-tas2', name: 'Kapak&Gövde - taş (Son Kontrol)', baseStepName: 'taş', category: 'Kapak&Gövde', columns: [6, 7], status: 'Pending' },
+      { id: 'kg-saplama', name: 'Kapak&Gövde - saplama', baseStepName: 'saplama', category: 'Kapak&Gövde', columns: [7, 8], status: 'Pending' },
+      { id: 'kg-boyahazir', name: 'Kapak&Gövde - boya hazırlık', baseStepName: 'boya hazırlık', category: 'Kapak&Gövde', columns: [8, 9], status: 'Pending' },
+      { id: 'kg-boya', name: 'Kapak&Gövde - boya', baseStepName: 'boya', category: 'Kapak&Gövde', columns: [9, 10], status: 'Pending' },
+      { id: 'kg-montaj', name: 'Kapak&Gövde - montaj', baseStepName: 'montaj', category: 'Kapak&Gövde', columns: [10, 11], status: 'Pending' },
+      { id: 'kg-paket', name: 'Kapak&Gövde - paket', baseStepName: 'paket', category: 'Kapak&Gövde', columns: [15], status: 'Pending' },
+
+      { id: 'ry-kesim', name: 'Raylar - kesim', baseStepName: 'kesim', category: 'Raylar', columns: [1], status: 'Completed', completedAt: '2026-05-19T10:15:00Z', completedBy: 'Leah Vance' },
+      { id: 'ry-bukum', name: 'Raylar - büküm', baseStepName: 'büküm', category: 'Raylar', columns: [2, 3], status: 'Completed', completedAt: '2026-05-19T16:00:00Z', completedBy: 'Leah Vance' },
+      { id: 'ry-punta', name: 'Raylar - punta', baseStepName: 'punta', category: 'Raylar', columns: [3, 4], status: 'Pending' },
+      { id: 'ry-catim', name: 'Raylar - çatım', baseStepName: 'çatım', category: 'Raylar', columns: [4, 5], status: 'Pending' },
+
+      { id: 'el-delik', name: 'elektrik - delik delme', baseStepName: 'delik delme', category: 'elektrik', columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], status: 'In_Progress' },
+      { id: 'el-panosaci', name: 'elektrik - pano sacı', baseStepName: 'pano sacı', category: 'elektrik', columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], status: 'In_Progress' },
+      { id: 'el-kablolama', name: 'elektrik - kablolama', baseStepName: 'kablolama', category: 'elektrik', columns: [11, 12], status: 'Pending' },
+      { id: 'el-test', name: 'elektrik - test', baseStepName: 'test', category: 'elektrik', columns: [13], status: 'Pending' },
+      { id: 'el-etiket', name: 'elektrik - etiket', baseStepName: 'etiket', category: 'elektrik', columns: [12, 13, 14], status: 'Pending' }
     ],
     notes: 'Chassis material is high-alloy aerospace aluminum. Weld with care.'
   },
@@ -163,12 +180,30 @@ export const INITIAL_WORK_ORDERS: WorkOrder[] = [
     priority: 'Medium',
     status: 'Scheduled',
     steps: [
-      { id: 'step-1', name: 'Material Prep & Cutting', status: 'Completed', completedAt: '2026-05-20T03:00:00Z', completedBy: 'Leah Vance' },
-      { id: 'step-2', name: 'Precision CNC Mill', status: 'Pending' },
-      { id: 'step-3', name: 'TIG Welding & Fusion', status: 'Pending' },
-      { id: 'step-4', name: 'X-Ray Alignment & QC', status: 'Pending' },
-      { id: 'step-5', name: 'ESD Protective Coating', status: 'Pending' }
-    ]
+      { id: 'kg-kesim', name: 'Kapak&Gövde - kesim', baseStepName: 'kesim', category: 'Kapak&Gövde', columns: [1], status: 'Pending' },
+      { id: 'kg-bukum', name: 'Kapak&Gövde - büküm', baseStepName: 'büküm', category: 'Kapak&Gövde', columns: [2, 3], status: 'Pending' },
+      { id: 'kg-catim', name: 'Kapak&Gövde - çatım', baseStepName: 'çatım', category: 'Kapak&Gövde', columns: [3, 4], status: 'Pending' },
+      { id: 'kg-tas1', name: 'Kapak&Gövde - taş (Temizlik)', baseStepName: 'taş', category: 'Kapak&Gövde', columns: [4, 5], status: 'Pending' },
+      { id: 'kg-kaynak', name: 'Kapak&Gövde - kaynak', baseStepName: 'kaynak', category: 'Kapak&Gövde', columns: [5, 6], status: 'Pending' },
+      { id: 'kg-tas2', name: 'Kapak&Gövde - taş (Son Kontrol)', baseStepName: 'taş', category: 'Kapak&Gövde', columns: [6, 7], status: 'Pending' },
+      { id: 'kg-saplama', name: 'Kapak&Gövde - saplama', baseStepName: 'saplama', category: 'Kapak&Gövde', columns: [7, 8], status: 'Pending' },
+      { id: 'kg-boyahazir', name: 'Kapak&Gövde - boya hazırlık', baseStepName: 'boya hazırlık', category: 'Kapak&Gövde', columns: [8, 9], status: 'Pending' },
+      { id: 'kg-boya', name: 'Kapak&Gövde - boya', baseStepName: 'boya', category: 'Kapak&Gövde', columns: [9, 10], status: 'Pending' },
+      { id: 'kg-montaj', name: 'Kapak&Gövde - montaj', baseStepName: 'montaj', category: 'Kapak&Gövde', columns: [10, 11], status: 'Pending' },
+      { id: 'kg-paket', name: 'Kapak&Gövde - paket', baseStepName: 'paket', category: 'Kapak&Gövde', columns: [15], status: 'Pending' },
+
+      { id: 'ry-kesim', name: 'Raylar - kesim', baseStepName: 'kesim', category: 'Raylar', columns: [1], status: 'Pending' },
+      { id: 'ry-bukum', name: 'Raylar - büküm', baseStepName: 'büküm', category: 'Raylar', columns: [2, 3], status: 'Pending' },
+      { id: 'ry-punta', name: 'Raylar - punta', baseStepName: 'punta', category: 'Raylar', columns: [3, 4], status: 'Pending' },
+      { id: 'ry-catim', name: 'Raylar - çatım', baseStepName: 'çatım', category: 'Raylar', columns: [4, 5], status: 'Pending' },
+
+      { id: 'el-delik', name: 'elektrik - delik delme', baseStepName: 'delik delme', category: 'elektrik', columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], status: 'Pending' },
+      { id: 'el-panosaci', name: 'elektrik - pano sacı', baseStepName: 'pano sacı', category: 'elektrik', columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], status: 'Pending' },
+      { id: 'el-kablolama', name: 'elektrik - kablolama', baseStepName: 'kablolama', category: 'elektrik', columns: [11, 12], status: 'Pending' },
+      { id: 'el-test', name: 'elektrik - test', baseStepName: 'test', category: 'elektrik', columns: [13], status: 'Pending' },
+      { id: 'el-etiket', name: 'elektrik - etiket', baseStepName: 'etiket', category: 'elektrik', columns: [12, 13, 14], status: 'Pending' }
+    ],
+    notes: 'Prioritized high-speed core unit fabrication.'
   },
   {
     id: 'wo-103',
@@ -179,11 +214,28 @@ export const INITIAL_WORK_ORDERS: WorkOrder[] = [
     priority: 'High',
     status: 'On_Hold',
     steps: [
-      { id: 'step-1', name: 'Material Prep & Cutting', status: 'Completed', completedAt: '2026-05-12T08:00:00Z', completedBy: 'Leah Vance' },
-      { id: 'step-2', name: 'Precision CNC Mill', status: 'Completed', completedAt: '2026-05-14T11:00:00Z', completedBy: 'Marcus Sterling' },
-      { id: 'step-3', name: 'TIG Welding & Fusion', status: 'In_Progress' },
-      { id: 'step-4', name: 'X-Ray Alignment & QC', status: 'Pending' },
-      { id: 'step-5', name: 'ESD Protective Coating', status: 'Pending' }
+      { id: 'kg-kesim', name: 'Kapak&Gövde - kesim', baseStepName: 'kesim', category: 'Kapak&Gövde', columns: [1], status: 'Completed', completedAt: '2026-05-12T08:00:00Z', completedBy: 'Leah Vance' },
+      { id: 'kg-bukum', name: 'Kapak&Gövde - büküm', baseStepName: 'büküm', category: 'Kapak&Gövde', columns: [2, 3], status: 'Completed', completedAt: '2026-05-14T11:00:00Z', completedBy: 'Marcus Sterling' },
+      { id: 'kg-catim', name: 'Kapak&Gövde - çatım', baseStepName: 'çatım', category: 'Kapak&Gövde', columns: [3, 4], status: 'In_Progress' },
+      { id: 'kg-tas1', name: 'Kapak&Gövde - taş (Temizlik)', baseStepName: 'taş', category: 'Kapak&Gövde', columns: [4, 5], status: 'Pending' },
+      { id: 'kg-kaynak', name: 'Kapak&Gövde - kaynak', baseStepName: 'kaynak', category: 'Kapak&Gövde', columns: [5, 6], status: 'Pending' },
+      { id: 'kg-tas2', name: 'Kapak&Gövde - taş (Son Kontrol)', baseStepName: 'taş', category: 'Kapak&Gövde', columns: [6, 7], status: 'Pending' },
+      { id: 'kg-saplama', name: 'Kapak&Gövde - saplama', baseStepName: 'saplama', category: 'Kapak&Gövde', columns: [7, 8], status: 'Pending' },
+      { id: 'kg-boyahazir', name: 'Kapak&Gövde - boya hazırlık', baseStepName: 'boya hazırlık', category: 'Kapak&Gövde', columns: [8, 9], status: 'Pending' },
+      { id: 'kg-boya', name: 'Kapak&Gövde - boya', baseStepName: 'boya', category: 'Kapak&Gövde', columns: [9, 10], status: 'Pending' },
+      { id: 'kg-montaj', name: 'Kapak&Gövde - montaj', baseStepName: 'montaj', category: 'Kapak&Gövde', columns: [10, 11], status: 'Pending' },
+      { id: 'kg-paket', name: 'Kapak&Gövde - paket', baseStepName: 'paket', category: 'Kapak&Gövde', columns: [15], status: 'Pending' },
+
+      { id: 'ry-kesim', name: 'Raylar - kesim', baseStepName: 'kesim', category: 'Raylar', columns: [1], status: 'Completed', completedAt: '2026-05-12T08:30:00Z', completedBy: 'Leah Vance' },
+      { id: 'ry-bukum', name: 'Raylar - büküm', baseStepName: 'büküm', category: 'Raylar', columns: [2, 3], status: 'Pending' },
+      { id: 'ry-punta', name: 'Raylar - punta', baseStepName: 'punta', category: 'Raylar', columns: [3, 4], status: 'Pending' },
+      { id: 'ry-catim', name: 'Raylar - çatım', baseStepName: 'çatım', category: 'Raylar', columns: [4, 5], status: 'Pending' },
+
+      { id: 'el-delik', name: 'elektrik - delik delme', baseStepName: 'delik delme', category: 'elektrik', columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], status: 'Pending' },
+      { id: 'el-panosaci', name: 'elektrik - pano sacı', baseStepName: 'pano sacı', category: 'elektrik', columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], status: 'Pending' },
+      { id: 'el-kablolama', name: 'elektrik - kablolama', baseStepName: 'kablolama', category: 'elektrik', columns: [11, 12], status: 'Pending' },
+      { id: 'el-test', name: 'elektrik - test', baseStepName: 'test', category: 'elektrik', columns: [13], status: 'Pending' },
+      { id: 'el-etiket', name: 'elektrik - etiket', baseStepName: 'etiket', category: 'elektrik', columns: [12, 13, 14], status: 'Pending' }
     ],
     notes: 'On hold waiting for copper pipeline courier confirmation from supplier.'
   },
@@ -196,11 +248,28 @@ export const INITIAL_WORK_ORDERS: WorkOrder[] = [
     priority: 'Low',
     status: 'Draft',
     steps: [
-      { id: 'step-1', name: 'Material Prep & Cutting', status: 'Pending' },
-      { id: 'step-2', name: 'Precision CNC Mill', status: 'Pending' },
-      { id: 'step-3', name: 'TIG Welding & Fusion', status: 'Pending' },
-      { id: 'step-4', name: 'X-Ray Alignment & QC', status: 'Pending' },
-      { id: 'step-5', name: 'ESD Protective Coating', status: 'Pending' }
+      { id: 'kg-kesim', name: 'Kapak&Gövde - kesim', baseStepName: 'kesim', category: 'Kapak&Gövde', columns: [1], status: 'Pending' },
+      { id: 'kg-bukum', name: 'Kapak&Gövde - büküm', baseStepName: 'büküm', category: 'Kapak&Gövde', columns: [2, 3], status: 'Pending' },
+      { id: 'kg-catim', name: 'Kapak&Gövde - çatım', baseStepName: 'çatım', category: 'Kapak&Gövde', columns: [3, 4], status: 'Pending' },
+      { id: 'kg-tas1', name: 'Kapak&Gövde - taş (Temizlik)', baseStepName: 'taş', category: 'Kapak&Gövde', columns: [4, 5], status: 'Pending' },
+      { id: 'kg-kaynak', name: 'Kapak&Gövde - kaynak', baseStepName: 'kaynak', category: 'Kapak&Gövde', columns: [5, 6], status: 'Pending' },
+      { id: 'kg-tas2', name: 'Kapak&Gövde - taş (Son Kontrol)', baseStepName: 'taş', category: 'Kapak&Gövde', columns: [6, 7], status: 'Pending' },
+      { id: 'kg-saplama', name: 'Kapak&Gövde - saplama', baseStepName: 'saplama', category: 'Kapak&Gövde', columns: [7, 8], status: 'Pending' },
+      { id: 'kg-boyahazir', name: 'Kapak&Gövde - boya hazırlık', baseStepName: 'boya hazırlık', category: 'Kapak&Gövde', columns: [8, 9], status: 'Pending' },
+      { id: 'kg-boya', name: 'Kapak&Gövde - boya', baseStepName: 'boya', category: 'Kapak&Gövde', columns: [9, 10], status: 'Pending' },
+      { id: 'kg-montaj', name: 'Kapak&Gövde - montaj', baseStepName: 'montaj', category: 'Kapak&Gövde', columns: [10, 11], status: 'Pending' },
+      { id: 'kg-paket', name: 'Kapak&Gövde - paket', baseStepName: 'paket', category: 'Kapak&Gövde', columns: [15], status: 'Pending' },
+
+      { id: 'ry-kesim', name: 'Raylar - kesim', baseStepName: 'kesim', category: 'Raylar', columns: [1], status: 'Pending' },
+      { id: 'ry-bukum', name: 'Raylar - büküm', baseStepName: 'büküm', category: 'Raylar', columns: [2, 3], status: 'Pending' },
+      { id: 'ry-punta', name: 'Raylar - punta', baseStepName: 'punta', category: 'Raylar', columns: [3, 4], status: 'Pending' },
+      { id: 'ry-catim', name: 'Raylar - çatım', baseStepName: 'çatım', category: 'Raylar', columns: [4, 5], status: 'Pending' },
+
+      { id: 'el-delik', name: 'elektrik - delik delme', baseStepName: 'delik delme', category: 'elektrik', columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], status: 'Pending' },
+      { id: 'el-panosaci', name: 'elektrik - pano sacı', baseStepName: 'pano sacı', category: 'elektrik', columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], status: 'Pending' },
+      { id: 'el-kablolama', name: 'elektrik - kablolama', baseStepName: 'kablolama', category: 'elektrik', columns: [11, 12], status: 'Pending' },
+      { id: 'el-test', name: 'elektrik - test', baseStepName: 'test', category: 'elektrik', columns: [13], status: 'Pending' },
+      { id: 'el-etiket', name: 'elektrik - etiket', baseStepName: 'etiket', category: 'elektrik', columns: [12, 13, 14], status: 'Pending' }
     ]
   }
 ];
@@ -285,5 +354,114 @@ export const INITIAL_CONFIG: ERPConfig = {
   companyName: 'Nova Forge Technologies Inc.',
   taxNumber: 'TX-995-102-AQ',
   currency: 'USD',
-  taxRate: 20
+  taxRate: 20,
+  language: 'en'
 };
+
+export const INITIAL_CRM_CONTACTS: CRMContact[] = [
+  {
+    id: 'c-1',
+    name: 'Sarah Connor',
+    companyName: 'Cyberdyne Systems',
+    email: 's.connor@cyberdyne.io',
+    phone: '+1 (555) 720-1984',
+    role: 'Procurement Specialist',
+    status: 'Customer',
+    notes: 'Primary contact for next-gen hydraulic alloy frameworks.',
+    createdAt: '2026-04-10T12:00:00Z',
+  },
+  {
+    id: 'c-2',
+    name: 'Miles Dyson',
+    companyName: 'Cyberdyne Systems',
+    email: 'm.dyson@cyberdyne.io',
+    phone: '+1 (555) 300-1991',
+    role: 'Director of Advanced Research',
+    status: 'Lead',
+    notes: 'Interested in acquiring Quantum Process Chip S2 micro-architecture.',
+    createdAt: '2026-05-01T09:12:00Z',
+  },
+  {
+    id: 'c-3',
+    name: 'Ellie Sattler',
+    companyName: 'InGen Biotech Corp',
+    email: 'e.sattler@ingen.org',
+    phone: '+1 (555) 933-2001',
+    role: 'Operations Consultant',
+    status: 'Support_Required',
+    notes: 'Requires technical support for sensor payload calibration errors on pneumatic pressure systems.',
+    createdAt: '2026-05-15T15:30:00Z',
+  },
+  {
+    id: 'c-4',
+    name: 'Bruce Wayne',
+    companyName: 'Wayne Enterprises',
+    email: 'bwayne@waynecorp.com',
+    phone: '+1 (555) 911-3000',
+    role: 'CEO & Principal Shareholder',
+    status: 'Customer',
+    notes: 'Sourcing titanium chassis frames and aerospace rotational mounts. Custom defense projects.',
+    createdAt: '2026-05-18T18:45:00Z',
+  }
+];
+
+export const INITIAL_CRM_OPPORTUNITIES: CRMOpportunity[] = [
+  {
+    id: 'o-1',
+    title: 'Cyberdyne Chip Supply Deal',
+    contactId: 'c-2',
+    stage: 'Proposal_Sent',
+    value: 24900,
+    estCloseDate: '2026-06-15',
+    assignedTo: 'emp-4',
+    notes: 'Sent pricing proposal for 100 units of Quantum Process Chip S2.'
+  },
+  {
+    id: 'o-2',
+    title: 'Titanium Chassis Framing Procurement',
+    contactId: 'c-4',
+    stage: 'Negotiation',
+    value: 85000,
+    estCloseDate: '2026-06-30',
+    assignedTo: 'emp-4',
+    notes: 'Negotiating volume discount tier parameters.'
+  },
+  {
+    id: 'o-3',
+    title: 'Biotech Sensor Pilot Project',
+    contactId: 'c-3',
+    stage: 'Contacted',
+    value: 4500,
+    estCloseDate: '2026-07-10',
+    assignedTo: 'emp-4',
+    notes: 'Evaluating physical site calibration layout specifications.'
+  }
+];
+
+export const INITIAL_CRM_INTERACTIONS: CRMInteraction[] = [
+  {
+    id: 'i-1',
+    contactId: 'c-2',
+    type: 'Email',
+    title: 'Technical Specification Discussion',
+    notes: 'Sent technical data sheet for Quantum S2 processor chips indicating thermal tolerances.',
+    date: '2026-05-02'
+  },
+  {
+    id: 'i-2',
+    contactId: 'c-4',
+    type: 'Meeting',
+    title: 'High-volume Framing Evaluation',
+    notes: 'Discussed physical custom measurements for aerospace alloy chassis frames at local Wayne Labs.',
+    date: '2026-05-19'
+  },
+  {
+    id: 'i-3',
+    contactId: 'c-3',
+    type: 'Support_Ticket',
+    title: 'Pneumatic calibration payload feedback issue',
+    notes: 'Drift error of -0.05psi detected during stress analysis. Requesting diagnostic debug code files.',
+    date: '2026-05-20',
+    supportStatus: 'In_Progress'
+  }
+];

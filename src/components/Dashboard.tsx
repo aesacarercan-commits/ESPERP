@@ -1,9 +1,10 @@
 import React, { useMemo } from 'react';
 import { 
-  TrendingUp, Box, Layers, Cpu, AlertTriangle, CheckCircle2, DollarSign, Users, Clock, 
-  ArrowRight, MessageSquare, Award, ArrowUpRight, ShieldAlert, Sparkles, RefreshCw
+  TrendingUp, Box, Cpu, AlertTriangle, CheckCircle2, DollarSign, Users, Clock, 
+  ArrowRight, ShieldAlert, Sparkles
 } from 'lucide-react';
 import { Product, Invoice, WorkOrder, Employee, ERPConfig } from '../types';
+import { getTranslation, Language } from '../lib/translations';
 
 interface DashboardProps {
   products: Product[];
@@ -24,6 +25,8 @@ export default function Dashboard({
   setActiveTab,
   triggerSupplierReorder
 }: DashboardProps) {
+
+  const currentLang = config.language || 'en';
 
   // Financial Metrics
   const financials = useMemo(() => {
@@ -105,8 +108,10 @@ export default function Dashboard({
       list.push({
         id: 'notice-out',
         type: 'danger',
-        text: `${stockAlerts.outOfStock.length} critical raw materials are currently completely Out of Stock!`,
-        actionText: 'Restock Items',
+        text: currentLang === 'tr' 
+          ? `${stockAlerts.outOfStock.length} kritik hammadde şu anda tamamen tükenmiş durumda!`
+          : `${stockAlerts.outOfStock.length} critical raw materials are currently completely Out of Stock!`,
+        actionText: getTranslation(currentLang, 'restock'),
         actionTab: 'inventory'
       });
     }
@@ -116,8 +121,10 @@ export default function Dashboard({
       list.push({
         id: 'notice-mfr-overdue',
         type: 'danger',
-        text: `${manufacturingStats.overdueOrders.length} active work orders missed their planned completion target and are overdue.`,
-        actionText: 'Reschedule Work',
+        text: currentLang === 'tr' 
+          ? `${manufacturingStats.overdueOrders.length} aktif üretim emri hedeflenen süreyi aşmış durumda.`
+          : `${manufacturingStats.overdueOrders.length} active work orders missed their planned completion target and are overdue.`,
+        actionText: currentLang === 'tr' ? 'Sevk ve Takip' : 'Review Progress',
         actionTab: 'manufacturing'
       });
     }
@@ -127,8 +134,10 @@ export default function Dashboard({
       list.push({
         id: 'notice-low',
         type: 'warning',
-        text: `${stockAlerts.lowStock.length} items have fallen below safety inventory threshholds.`,
-        actionText: 'Review Stock',
+        text: currentLang === 'tr'
+          ? `${stockAlerts.lowStock.length} üründe emniyet stoğu sınırının altına düşüldü.`
+          : `${stockAlerts.lowStock.length} items have fallen below safety inventory threshholds.`,
+        actionText: currentLang === 'tr' ? 'Envanteri İncele' : 'Review Stock',
         actionTab: 'inventory'
       });
     }
@@ -138,8 +147,10 @@ export default function Dashboard({
       list.push({
         id: 'notice-fin-pending',
         type: 'info',
-        text: `${financials.pendingInvoices} client invoices are awaiting full payment validation (${config.currency} ${financials.unpaidTotal.toLocaleString()}).`,
-        actionText: 'Invoicing Ledger',
+        text: currentLang === 'tr'
+          ? `${financials.pendingInvoices} müşteri faturası tahsilat doğrulaması bekliyor (${config.currency} ${financials.unpaidTotal.toLocaleString()}).`
+          : `${financials.pendingInvoices} client invoices are awaiting full payment validation (${config.currency} ${financials.unpaidTotal.toLocaleString()}).`,
+        actionText: getTranslation(currentLang, 'direct_ledger_invoicing'),
         actionTab: 'sales'
       });
     }
@@ -149,14 +160,16 @@ export default function Dashboard({
       list.push({
         id: 'notice-all-clear',
         type: 'success',
-        text: 'All operational lines are reporting normal status logs. Active sync state secured.',
-        actionText: 'View Work Orders',
+        text: currentLang === 'tr'
+          ? 'Tüm operasyonel süreçler normal statüde çalışıyor. Sistem verileri senkronize durumda.'
+          : 'All operational lines are reporting normal status logs. Active sync state secured.',
+        actionText: currentLang === 'tr' ? 'Üretim Emirleri' : 'View Work Orders',
         actionTab: 'manufacturing'
       });
     }
 
     return list;
-  }, [stockAlerts, manufacturingStats, financials, config]);
+  }, [stockAlerts, manufacturingStats, financials, config, currentLang]);
 
   // Currency utility
   const formatCur = (amount: number) => {
@@ -167,25 +180,27 @@ export default function Dashboard({
   return (
     <div className="space-y-4 pt-1 text-left" id="dashboard-tab-panel">
       {/* High Density System Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-[#0f172a] border border-[#1e293b] p-3.5 rounded-lg text-slate-100 shadow-xs relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-sky-500/5 rounded-full blur-2xl pointer-events-none"></div>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-[#1e293b] p-3.5 rounded-xl text-slate-800 dark:text-slate-100 shadow-xs relative overflow-hidden transition-colors duration-300">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-sky-500/[0.04] dark:bg-sky-500/5 rounded-full blur-2xl pointer-events-none"></div>
         <div className="space-y-1 z-10">
-          <div className="flex items-center gap-1.5 bg-sky-500/10 w-fit px-2 py-0.5 rounded text-[#38bdf8] border border-sky-500/20 text-[9px] font-bold uppercase tracking-wider">
+          <div className="flex items-center gap-1.5 bg-sky-50 dark:bg-sky-500/10 w-fit px-2 py-0.5 rounded text-sky-600 dark:text-[#38bdf8] border border-sky-100 dark:border-sky-500/20 text-[9px] font-bold uppercase tracking-wider">
             <Sparkles className="w-3 h-3" />
-            <span>Operational Center Active</span>
+            <span>{currentLang === 'tr' ? 'OPERASYONEL YÖNETİM AKTİF' : 'OPERATIONAL CENTER ACTIVE'}</span>
           </div>
-          <h2 className="text-base font-bold tracking-tight text-white">{config.companyName}</h2>
-          <p className="text-slate-400 text-[11px] max-w-2xl leading-relaxed">
-            NEXUS Core Integration Engine. Consolidated high-density status feeds for precision manufacturing, physical inventory routing, and active ledger databases.
+          <h2 className="text-base font-bold tracking-tight text-slate-900 dark:text-white">{config.companyName}</h2>
+          <p className="text-slate-500 dark:text-slate-400 text-[11px] max-w-2xl leading-relaxed">
+            {currentLang === 'tr'
+              ? 'NEXUS Kurumsal Bütünleşik ERP Altyapısı. Hassas üretim akışları, fiziki envanter hareketleri ve cari muhasebe kayıtları için birleştirilmiş canlı bilgi akışı.'
+              : 'NEXUS Core Integration Engine. Consolidated high-density status feeds for precision manufacturing, physical inventory routing, and active ledger databases.'}
           </p>
         </div>
         
-        <div className="flex items-center gap-2.5 bg-[#0b0f19] border border-[#1e293b] p-2.5 rounded text-[11px] z-10 self-start md:self-auto font-mono">
-          <Clock className="w-4 h-4 text-sky-400 shrink-0" />
+        <div className="flex items-center gap-2.5 bg-slate-50 dark:bg-[#0b0f19] border border-slate-150 dark:border-[#1e293b] p-2.5 rounded-xl text-[11px] z-10 self-start md:self-auto font-mono transition-colors duration-300">
+          <Clock className="w-4 h-4 text-sky-500 dark:text-sky-400 shrink-0" />
           <div className="leading-tight">
-            <p className="text-[8px] text-slate-500 font-bold uppercase tracking-wider">System Clock</p>
-            <p className="font-bold text-slate-350">2026-05-20 05:29 UTC</p>
-            <p className="text-[9px] text-emerald-400 font-bold">● CLOUD PIPELINE ONLINE</p>
+            <p className="text-[8px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">{currentLang === 'tr' ? 'SİSTEM SAATİ' : 'SYSTEM CLOCK'}</p>
+            <p className="font-bold text-slate-700 dark:text-slate-350">2026-05-20 05:29 UTC</p>
+            <p className="text-[9px] text-emerald-600 dark:text-emerald-400 font-bold">● {currentLang === 'tr' ? 'BULUT BAĞLANTISI ÇEVRİMİÇİ' : 'CLOUD PIPELINE ONLINE'}</p>
           </div>
         </div>
       </div>
@@ -195,49 +210,57 @@ export default function Dashboard({
         {/* KPI 1: Realized Sales */}
         <div className="bg-white dark:bg-slate-900 p-3.5 rounded border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between gap-1.5 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] text-slate-500 dark:text-slate-450 font-semibold tracking-wider uppercase">Realized Revenue</span>
+            <span className="text-[10px] text-slate-500 dark:text-slate-450 font-semibold tracking-wider uppercase">
+              {getTranslation(currentLang, 'gross_revenue')}
+            </span>
             <span className="text-[10px] font-bold text-emerald-500">↑ 12.4%</span>
           </div>
           <h3 className="text-lg font-bold text-slate-950 dark:text-white font-mono leading-none">{formatCur(financials.salesTotal)}</h3>
           <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-450 flex items-center gap-1">
             <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full inline-block animate-pulse"></span>
-            Paid Ledger Cleared
+            {getTranslation(currentLang, 'paid_ledger')}
           </span>
         </div>
 
         {/* KPI 2: Inventory Value */}
         <div className="bg-white dark:bg-slate-900 p-3.5 rounded border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between gap-1.5 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] text-slate-500 dark:text-slate-450 font-semibold tracking-wider uppercase">Stored Assets Value</span>
+            <span className="text-[10px] text-slate-500 dark:text-slate-450 font-semibold tracking-wider uppercase">
+              {currentLang === 'tr' ? 'Stok Ömrü ve Varlığı' : 'Stored Assets Value'}
+            </span>
             <span className="text-[10px] font-bold text-sky-400">8.4x turn</span>
           </div>
           <h3 className="text-lg font-bold text-slate-950 dark:text-white font-mono leading-none">{formatCur(financials.stockAssetValue)}</h3>
           <span className="text-[9px] text-slate-400 font-medium">
-            Potent. sale: <b className="font-mono text-indigo-500">{formatCur(financials.stockPotentValue)}</b>
+            {currentLang === 'tr' ? 'Potansiyel ciro: ' : 'Potent. sale: '}<b className="font-mono text-indigo-500">{formatCur(financials.stockPotentValue)}</b>
           </span>
         </div>
 
         {/* KPI 3: Manufacturing Loading */}
-        <div className="bg-white dark:bg-slate-900 p-3.5 rounded border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between gap-1.5 relative overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 p-3.5 rounded border border-slate-200 dark:border-slate-805 shadow-xs flex flex-col justify-between gap-1.5 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] text-slate-500 dark:text-slate-450 font-semibold tracking-wider uppercase">Assembly Progress</span>
+            <span className="text-[10px] text-slate-500 dark:text-slate-455 font-semibold tracking-wider uppercase">
+              {currentLang === 'tr' ? 'Üretim Tamamlama Oranı' : 'Assembly Progress'}
+            </span>
             <span className="text-[10px] font-bold text-sky-400">98.4% rate</span>
           </div>
           <h3 className="text-lg font-bold text-slate-950 dark:text-white font-mono leading-none">{manufacturingStats.stepCompletionPercentage}%</h3>
           <span className="text-[9px] text-slate-450 font-medium truncate">
-            {manufacturingStats.inProgress} Active • {manufacturingStats.completed} Completed
+            {manufacturingStats.inProgress} {currentLang === 'tr' ? 'Aktif' : 'Active'} • {manufacturingStats.completed} {currentLang === 'tr' ? 'Bitti' : 'Completed'}
           </span>
         </div>
 
         {/* KPI 4: Operations Directory & Payroll */}
         <div className="bg-white dark:bg-slate-900 p-3.5 rounded border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between gap-1.5 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] text-slate-500 dark:text-slate-450 font-semibold tracking-wider uppercase">Monthly Payroll</span>
-            <span className="text-[10px] font-bold text-amber-500">Active</span>
+            <span className="text-[10px] text-slate-500 dark:text-slate-450 font-semibold tracking-wider uppercase">
+              {currentLang === 'tr' ? 'Bordro Net Gideri' : 'Monthly Payroll'}
+            </span>
+            <span className="text-[10px] font-bold text-amber-500">{getTranslation(currentLang, 'active')}</span>
           </div>
           <h3 className="text-lg font-bold text-slate-950 dark:text-white font-mono leading-none">{formatCur(hrStats.totalPayroll)}</h3>
           <span className="text-[9px] font-medium text-amber-600 dark:text-amber-450">
-            {hrStats.activeStaff} Staff on scheduled roster
+            {hrStats.activeStaff} {currentLang === 'tr' ? 'Aktif bordrolu çalışan' : 'Staff on scheduled roster'}
           </span>
         </div>
       </div>
@@ -253,10 +276,12 @@ export default function Dashboard({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
                 <ShieldAlert className="w-4 h-4 text-sky-500" />
-                <h4 className="text-xs font-bold uppercase tracking-widest text-slate-950 dark:text-white">Active Core Alerts & Feeds</h4>
+                <h4 className="text-xs font-bold uppercase tracking-widest text-slate-950 dark:text-white">
+                  {currentLang === 'tr' ? 'Aktif Alarm ve Bildirim Havuzu' : 'Active Core Alerts & Feeds'}
+                </h4>
               </div>
               <span className="text-[10px] font-mono font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded">
-                {notices.filter(n => n.type === 'danger' || n.type === 'warning').length} active reports
+                {notices.filter(n => n.type === 'danger' || n.type === 'warning').length} {currentLang === 'tr' ? 'aktif bildirim' : 'active reports'}
               </span>
             </div>
  
@@ -286,7 +311,7 @@ export default function Dashboard({
                   {notice.actionTab && (
                     <button 
                       onClick={() => setActiveTab(notice.actionTab)} 
-                      className="px-2.5 py-1 shrink-0 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-bold border border-slate-200 dark:border-slate-700 rounded shadow-xs flex items-center gap-1 text-[10px] uppercase tracking-wider self-end sm:self-auto hover:text-sky-500 transition-colors"
+                      className="px-2.5 py-1 shrink-0 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-bold border border-slate-200 dark:border-slate-705 rounded shadow-xs flex items-center gap-1 text-[10px] uppercase tracking-wider self-end sm:self-auto hover:text-sky-505 transition-colors cursor-pointer"
                     >
                       <span>{notice.actionText}</span>
                       <ArrowRight className="w-3 h-3" />
@@ -304,20 +329,22 @@ export default function Dashboard({
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-lg shadow-xs space-y-3">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <h5 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sales Ledger Balance</h5>
-                  <h4 className="text-xs font-bold text-slate-800 dark:text-slate-100">Paid vs Unpaid Volume</h4>
+                  <h5 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    {currentLang === 'tr' ? 'Cari Hesap Dağılımı' : 'Sales Ledger Balance'}
+                  </h5>
+                  <h4 className="text-xs font-bold text-slate-800 dark:text-slate-100">
+                    {getTranslation(currentLang, 'sales_vs_outstanding')}
+                  </h4>
                 </div>
-                <div className="text-right">
-                  <p className="text-xs font-mono font-bold text-sky-600 dark:text-sky-400">
-                    Total: {formatCur(financials.salesTotal + financials.unpaidTotal)}
-                  </p>
+                <div className="text-right font-mono text-[11px] font-bold text-sky-500">
+                  {currentLang === 'tr' ? 'Toplam: ' : 'Total: '}{formatCur(financials.salesTotal + financials.unpaidTotal)}
                 </div>
               </div>
-
+ 
               {/* Robust Interactive Vector Graphic - Stacked Sales Volume */}
               <div className="h-44 flex items-end justify-center px-2 py-4 border border-slate-100 dark:border-slate-800 rounded-md bg-slate-50/50 dark:bg-slate-950/20 relative">
                 {financials.salesTotal === 0 && financials.unpaidTotal === 0 ? (
-                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">No Sales Registered</p>
+                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">{getTranslation(currentLang, 'no_sales_registered')}</p>
                 ) : (
                   <div className="w-full h-full flex flex-col justify-between">
                     <div className="flex-1 flex items-end gap-16 justify-center">
@@ -330,9 +357,9 @@ export default function Dashboard({
                           className="w-14 bg-emerald-500 rounded-t hover:bg-emerald-400 transition-all duration-300 shadow-xs"
                           style={{ height: `${Math.max(20, Math.min(100, (financials.salesTotal / (financials.salesTotal + financials.unpaidTotal)) * 110))}px` }}
                         ></div>
-                        <span className="text-[9px] uppercase font-bold tracking-wider text-slate-400">Paid Ledger</span>
+                        <span className="text-[9px] uppercase font-bold tracking-wider text-slate-400">{getTranslation(currentLang, 'paid_ledger')}</span>
                       </div>
-
+ 
                       {/* Bar 2: Outstanding invoice pending */}
                       <div className="flex flex-col items-center gap-2 group cursor-pointer">
                         <span className="text-[10px] font-mono font-bold text-sky-500 hover:scale-105 transition-transform font-bold">
@@ -342,27 +369,27 @@ export default function Dashboard({
                           className="w-14 bg-sky-500 rounded-t hover:bg-sky-400 transition-all duration-300 shadow-xs"
                           style={{ height: `${Math.max(20, Math.min(100, (financials.unpaidTotal / (financials.salesTotal + financials.unpaidTotal)) * 110))}px` }}
                         ></div>
-                        <span className="text-[9px] uppercase font-bold tracking-wider text-slate-400">Receivable</span>
+                        <span className="text-[9px] uppercase font-bold tracking-wider text-slate-400">{getTranslation(currentLang, 'receivable')}</span>
                       </div>
                     </div>
                   </div>
                 )}
               </div>
             </div>
-
+ 
             {/* Warehouse Category Volume */}
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-lg shadow-xs space-y-3">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <h5 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Warehouse Distribution</h5>
-                  <h4 className="text-xs font-bold text-slate-800 dark:text-slate-100">Categories Allocation</h4>
+                  <h5 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{getTranslation(currentLang, 'warehouse_distribution')}</h5>
+                  <h4 className="text-xs font-bold text-slate-800 dark:text-slate-100">{getTranslation(currentLang, 'categories_allocation')}</h4>
                 </div>
               </div>
-
+ 
               {/* Custom Vector Donut list representing product counts per category in stock */}
               <div className="h-44 flex flex-col justify-center p-3 border border-slate-100 dark:border-slate-800 rounded-md bg-slate-50/50 dark:bg-slate-950/20 relative space-y-2">
                 {products.length === 0 ? (
-                  <p className="text-[10px] text-slate-400 uppercase font-bold text-center tracking-widest">Warehouse Empty</p>
+                  <p className="text-[10px] text-slate-400 uppercase font-bold text-center tracking-widest">{getTranslation(currentLang, 'warehouse_empty')}</p>
                 ) : (
                   <div className="space-y-2 overflow-y-auto max-h-full scrollbar-thin">
                     {Object.entries(
@@ -381,7 +408,7 @@ export default function Dashboard({
                       const color = colors[idx % colors.length];
                       const totalQty = products.reduce((sum, p) => sum + p.qty, 0);
                       const percent = totalQty > 0 ? Math.round((count / totalQty) * 100) : 0;
-
+ 
                       return (
                         <div key={cat} className="flex items-center justify-between text-[11px] font-medium">
                           <div className="flex items-center gap-1.5 w-24">
@@ -404,52 +431,52 @@ export default function Dashboard({
                 )}
               </div>
             </div>
-
+ 
           </div>
         </div>
-
+ 
         {/* Right Column (1-Span): High Priority Job & Stock Reorders */}
         <div className="space-y-4">
           
           {/* Overdue and Urgent Assembly Runs */}
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-lg shadow-xs space-y-3">
-            <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Priority Shop Works</h4>
+            <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{getTranslation(currentLang, 'priority_shop_works')}</h4>
             
             <div className="space-y-2">
               {workOrders.filter(w => w.status !== 'Completed').slice(0, 3).map((order) => {
                 const completedStepsCount = order.steps.filter(s => s.status === 'Completed').length;
                 const totalSteps = order.steps.length;
                 const progressLevel = Math.round((completedStepsCount / totalSteps) * 100);
-
+ 
                 return (
                   <div 
                     key={order.id} 
-                    className="p-2.5 border border-slate-100 dark:border-slate-800 hover:border-sky-300 dark:hover:border-sky-900 rounded-md transition-all space-y-2 text-xs text-left cursor-pointer group"
+                    className="p-2.5 border border-slate-100 dark:border-slate-800 hover:border-sky-305 dark:hover:border-sky-900 rounded-md transition-all space-y-2 text-xs text-left cursor-pointer group"
                     onClick={() => setActiveTab('manufacturing')}
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-mono text-slate-500 dark:text-slate-400 font-bold text-[10px]">{order.orderNumber}</span>
                       <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${
                         order.priority === 'High' 
-                          ? 'bg-rose-50 dark:bg-rose-950/25 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-950/40'
+                          ? 'bg-rose-50 dark:bg-rose-955/25 text-rose-600 dark:text-rose-450 border border-rose-100 dark:border-rose-900'
                           : order.priority === 'Medium'
-                          ? 'bg-amber-50 dark:bg-amber-950/25 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-950/40'
+                          ? 'bg-amber-50 dark:bg-amber-955/25 text-amber-600 dark:text-amber-450 border border-amber-100 dark:border-amber-900'
                           : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
                       }`}>
-                        {order.priority}
+                        {order.priority === 'High' ? getTranslation(currentLang, 'high') : order.priority === 'Medium' ? getTranslation(currentLang, 'medium') : getTranslation(currentLang, 'low')}
                       </span>
                     </div>
-
+ 
                     <div>
-                      <h5 className="font-bold text-slate-800 dark:text-slate-200 uppercase tracking-tight group-hover:text-sky-500 transition-colors line-clamp-1 text-[11px]">
+                      <h5 className="font-bold text-slate-805 dark:text-slate-200 uppercase tracking-tight group-hover:text-sky-500 transition-colors line-clamp-1 text-[11px]">
                         {order.productName}
                       </h5>
-                      <p className="text-[9px] text-slate-450 mt-0.5">Qty: {order.qty} pcs • Target: {order.targetDate}</p>
+                      <p className="text-[9px] text-slate-450 mt-0.5">{getTranslation(currentLang, 'qty')}: {order.qty} pcs • {getTranslation(currentLang, 'target')}: {order.targetDate}</p>
                     </div>
-
+ 
                     <div className="space-y-1">
                       <div className="flex justify-between text-[9px] text-slate-500 font-semibold">
-                        <span>Phase progress</span>
+                        <span>{getTranslation(currentLang, 'phase_progress')}</span>
                         <span className="font-mono text-sky-500">{progressLevel}%</span>
                       </div>
                       <div className="h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
@@ -465,25 +492,25 @@ export default function Dashboard({
               
               <button 
                 onClick={() => setActiveTab('manufacturing')}
-                className="w-full py-2 bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded flex items-center justify-center gap-1.5 text-[10px] text-slate-600 dark:text-slate-350 hover:text-sky-500 transition-all uppercase tracking-wider font-bold"
+                className="w-full py-2 bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded flex items-center justify-center gap-1.5 text-[10px] text-slate-650 dark:text-slate-305 hover:text-sky-550 transition-all uppercase tracking-wider font-bold cursor-pointer font-sans"
               >
-                <span>Enter Assembly floor</span>
+                <span>{getTranslation(currentLang, 'enter_assembly_floor')}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
-
+ 
           {/* Quick Resupply Operations - Directly interactive! */}
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-lg shadow-xs space-y-3">
-            <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Critical Material Supply</h4>
+            <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{getTranslation(currentLang, 'critical_material_supply')}</h4>
             
             <div className="space-y-2">
               {[...stockAlerts.outOfStock, ...stockAlerts.lowStock].slice(0, 3).map((prod) => (
                 <div key={prod.id} className="p-2.5 border border-slate-100 dark:border-slate-800 rounded-md flex items-center justify-between gap-2 text-xs text-left">
                   <div className="space-y-0.5 max-w-[130px]">
                     <h5 className="font-bold text-slate-800 dark:text-slate-200 uppercase tracking-tight truncate text-[11px]">{prod.name}</h5>
-                    <p className="text-[9px] text-slate-500 leading-tight">
-                      Stock: <span className={prod.qty === 0 ? 'text-red-500 font-bold font-mono' : 'text-amber-500 font-bold font-mono'}>{prod.qty} u</span> / safety: {prod.minQty}
+                    <p className="text-[9px] text-slate-550 leading-tight">
+                      {currentLang === 'tr' ? 'Mevcut: ' : 'Stock: '} <span className={prod.qty === 0 ? 'text-red-500 font-bold font-mono' : 'text-amber-500 font-bold font-mono'}>{prod.qty} u</span> / {currentLang === 'tr' ? 'emniyet: ' : 'safety: '} {prod.minQty}
                     </p>
                   </div>
                   
@@ -491,22 +518,22 @@ export default function Dashboard({
                     onClick={() => triggerSupplierReorder(prod.id)}
                     className="px-2 py-1 bg-sky-500 hover:bg-sky-600 text-slate-950 font-bold rounded text-[9px] uppercase tracking-wider cursor-pointer shadow-xs transition-transform hover:scale-105"
                   >
-                    Restock
+                    {getTranslation(currentLang, 'restock')}
                   </button>
                 </div>
               ))}
               
               {stockAlerts.outOfStock.length === 0 && stockAlerts.lowStock.length === 0 && (
-                <div className="p-6 text-center text-[11px] text-slate-450 font-semibold border border-dashed border-slate-150 dark:border-slate-800 rounded-md space-y-1.5">
-                  <CheckCircle2 className="w-6.5 h-6.5 text-emerald-400 mx-auto" />
-                  <p className="uppercase tracking-widest text-[9px] font-bold">Inventory Secured</p>
+                <div className="p-6 text-center text-[11px] text-slate-450 font-semibold border border-dashed border-slate-150 dark:border-slate-800 rounded-md space-y-1.5 font-sans">
+                  <CheckCircle2 className="w-6.5 h-6.5 text-emerald-400 mx-auto animate-bounce" />
+                  <p className="uppercase tracking-widest text-[9px] font-bold text-emerald-600">{getTranslation(currentLang, 'inventory_secured')}</p>
                 </div>
               )}
             </div>
           </div>
-
+ 
         </div>
-
+ 
       </div>
     </div>
   );

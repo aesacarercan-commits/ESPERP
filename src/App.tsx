@@ -2,14 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { 
   TrendingUp, Box, Layers, Cpu, Users, Settings, Activity, ArrowUpRight, 
   HelpCircle, Moon, Sun, Monitor, DollarSign, Calendar, SlidersHorizontal, LayoutDashboard,
-  Sparkles, ShieldCheck, Clock
+  Sparkles, ShieldCheck, Clock, Handshake
 } from 'lucide-react';
 
 // Domain imports
-import { Product, Invoice, WorkOrder, Employee, ERPConfig, WorkStep } from './types';
+import { Product, Invoice, WorkOrder, Employee, ERPConfig, WorkStep, CRMContact, CRMOpportunity, CRMInteraction } from './types';
 import { 
-  INITIAL_PRODUCTS, INITIAL_INVOICES, INITIAL_WORK_ORDERS, INITIAL_EMPLOYEES, INITIAL_CONFIG 
+  INITIAL_PRODUCTS, INITIAL_INVOICES, INITIAL_WORK_ORDERS, INITIAL_EMPLOYEES, INITIAL_CONFIG, INITIAL_CRM_CONTACTS, INITIAL_CRM_OPPORTUNITIES, INITIAL_CRM_INTERACTIONS 
 } from './data';
+import { getTranslation, Language } from './lib/translations';
 
 // Component imports
 import Dashboard from './components/Dashboard';
@@ -17,6 +18,7 @@ import InventoryManager from './components/InventoryManager';
 import SalesManager from './components/SalesManager';
 import ProductionManager from './components/ProductionManager';
 import HRManager from './components/HRManager';
+import CRMManager from './components/CRMManager';
 import SettingsManager from './components/SettingsManager';
 
 export default function App() {
@@ -42,7 +44,20 @@ export default function App() {
 
   const [workOrders, setWorkOrders] = useState<WorkOrder[]>(() => {
     const saved = localStorage.getItem('erp_work_orders');
-    return saved ? JSON.parse(saved) : INITIAL_WORK_ORDERS;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved) as WorkOrder[];
+        const needsUpgrade = parsed.length === 0 || parsed.some(wo => !wo.steps || wo.steps.length !== 20 || !wo.steps[0].category);
+        if (needsUpgrade) {
+          localStorage.setItem('erp_work_orders', JSON.stringify(INITIAL_WORK_ORDERS));
+          return INITIAL_WORK_ORDERS;
+        }
+        return parsed;
+      } catch (e) {
+        return INITIAL_WORK_ORDERS;
+      }
+    }
+    return INITIAL_WORK_ORDERS;
   });
 
   const [employees, setEmployees] = useState<Employee[]>(() => {
@@ -53,6 +68,21 @@ export default function App() {
   const [config, setConfig] = useState<ERPConfig>(() => {
     const saved = localStorage.getItem('erp_config');
     return saved ? JSON.parse(saved) : INITIAL_CONFIG;
+  });
+
+  const [contacts, setContacts] = useState<CRMContact[]>(() => {
+    const saved = localStorage.getItem('erp_crm_contacts');
+    return saved ? JSON.parse(saved) : INITIAL_CRM_CONTACTS;
+  });
+
+  const [opportunities, setOpportunities] = useState<CRMOpportunity[]>(() => {
+    const saved = localStorage.getItem('erp_crm_opportunities');
+    return saved ? JSON.parse(saved) : INITIAL_CRM_OPPORTUNITIES;
+  });
+
+  const [interactions, setInteractions] = useState<CRMInteraction[]>(() => {
+    const saved = localStorage.getItem('erp_crm_interactions');
+    return saved ? JSON.parse(saved) : INITIAL_CRM_INTERACTIONS;
   });
 
   // Safe synchronization loops to persist entries
@@ -75,6 +105,18 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('erp_config', JSON.stringify(config));
   }, [config]);
+
+  useEffect(() => {
+    localStorage.setItem('erp_crm_contacts', JSON.stringify(contacts));
+  }, [contacts]);
+
+  useEffect(() => {
+    localStorage.setItem('erp_crm_opportunities', JSON.stringify(opportunities));
+  }, [opportunities]);
+
+  useEffect(() => {
+    localStorage.setItem('erp_crm_interactions', JSON.stringify(interactions));
+  }, [interactions]);
 
   // Handle Dark mode layout attributes
   useEffect(() => {
@@ -106,7 +148,7 @@ export default function App() {
   };
 
   const handleDeleteProduct = (productId: string) => {
-    if (confirm("Decommission this inventory SKU? This action is irreversible.")) {
+    if (confirm(getTranslation(config.language, 'confirm_delete_product'))) {
       setProducts(prev => prev.filter(p => p.id !== productId));
     }
   };
@@ -153,7 +195,7 @@ export default function App() {
   };
 
   const handleDeleteInvoice = (invoiceId: string) => {
-    if (confirm("Delete this invoice record from the system ledger?")) {
+    if (confirm(getTranslation(config.language, 'confirm_delete_invoice'))) {
       setInvoices(prev => prev.filter(inv => inv.id !== invoiceId));
     }
   };
@@ -267,7 +309,7 @@ export default function App() {
   };
 
   const handleDeleteEmployee = (empId: string) => {
-    if (confirm("Terminate employee contract and archive personnel file?")) {
+    if (confirm(getTranslation(config.language, 'confirm_delete_emp'))) {
       setEmployees(prev => prev.filter(e => e.id !== empId));
     }
   };
@@ -277,12 +319,84 @@ export default function App() {
     setConfig(newConfig);
   };
 
+  // 6. CRM state management mutations
+  const handleAddContact = (newContact: Omit<CRMContact, 'id' | 'createdAt'>) => {
+    const item: CRMContact = {
+      ...newContact,
+      id: `c-${Date.now()}`,
+      createdAt: new Date().toISOString()
+    };
+    setContacts(prev => [item, ...prev]);
+  };
+
+  const handleUpdateContact = (updatedContact: CRMContact) => {
+    setContacts(prev => prev.map(c => c.id === updatedContact.id ? updatedContact : c));
+  };
+
+  const handleDeleteContact = (contactId: string) => {
+    setContacts(prev => prev.filter(c => c.id !== contactId));
+    setOpportunities(prev => prev.filter(o => o.contactId !== contactId));
+    setInteractions(prev => prev.filter(i => i.contactId !== contactId));
+  };
+
+  const handleAddOpportunity = (newOpp: Omit<CRMOpportunity, 'id'>) => {
+    const item: CRMOpportunity = {
+      ...newOpp,
+      id: `o-${Date.now()}`
+    };
+    setOpportunities(prev => [item, ...prev]);
+  };
+
+  const handleUpdateOpportunityStage = (oppId: string, stage: CRMOpportunity['stage']) => {
+    setOpportunities(prev => prev.map(o => o.id === oppId ? { ...o, stage } : o));
+  };
+
+  const handleDeleteOpportunity = (oppId: string) => {
+    setOpportunities(prev => prev.filter(o => o.id !== oppId));
+  };
+
+  const handleAddInteraction = (newInter: Omit<CRMInteraction, 'id'>) => {
+    const item: CRMInteraction = {
+      ...newInter,
+      id: `i-${Date.now()}`
+    };
+    setInteractions(prev => [item, ...prev]);
+
+    // Lift contact status to Support_Required if unresolved ticket registered
+    if (newInter.type === 'Support_Ticket' && newInter.supportStatus !== 'Resolved') {
+      setContacts(prev => prev.map(c => c.id === newInter.contactId ? { ...c, status: 'Support_Required' } : c));
+    }
+  };
+
+  const handleUpdateSupportStatus = (interId: string, supportStatus: CRMInteraction['supportStatus']) => {
+    setInteractions(prev => prev.map(i => i.id === interId ? { ...i, supportStatus } : i));
+
+    if (supportStatus === 'Resolved') {
+      const ticket = interactions.find(i => i.id === interId);
+      if (ticket) {
+        setContacts(prev => prev.map(c => {
+          if (c.id === ticket.contactId && c.status === 'Support_Required') {
+            return { ...c, status: 'Customer' };
+          }
+          return c;
+        }));
+      }
+    }
+  };
+
+  const handleDeleteInteraction = (interId: string) => {
+    setInteractions(prev => prev.filter(i => i.id !== interId));
+  };
+
   const handleFactoryReset = () => {
     setProducts(INITIAL_PRODUCTS);
     setInvoices(INITIAL_INVOICES);
     setWorkOrders(INITIAL_WORK_ORDERS);
     setEmployees(INITIAL_EMPLOYEES);
     setConfig(INITIAL_CONFIG);
+    setContacts(INITIAL_CRM_CONTACTS);
+    setOpportunities(INITIAL_CRM_OPPORTUNITIES);
+    setInteractions(INITIAL_CRM_INTERACTIONS);
   };
 
   return (
@@ -299,7 +413,7 @@ export default function App() {
             </div>
             <div className="text-left font-bold tracking-wider text-slate-200 uppercase text-[11px] leading-tight">
               NEXUS ERP v2.4
-              <span className="text-[9px] text-sky-400 block font-medium capitalize tracking-wide">Enterprise Command</span>
+              <span className="text-[9px] text-sky-400 block font-medium capitalize tracking-wide">{getTranslation(config.language, 'enterprise_command')}</span>
             </div>
           </div>
         </div>
@@ -316,7 +430,7 @@ export default function App() {
             }`}
           >
             <LayoutDashboard className="w-3.5 h-3.5 shrink-0" />
-            <span>Dashboard</span>
+            <span>{getTranslation(config.language, 'dashboard')}</span>
           </button>
 
           <button 
@@ -328,7 +442,7 @@ export default function App() {
             }`}
           >
             <Box className="w-3.5 h-3.5 shrink-0" />
-            <span>Inventory & SKU</span>
+            <span>{getTranslation(config.language, 'inventory')}</span>
           </button>
 
           <button 
@@ -340,7 +454,7 @@ export default function App() {
             }`}
           >
             <DollarSign className="w-3.5 h-3.5 shrink-0" />
-            <span>Finance Control</span>
+            <span>{getTranslation(config.language, 'sales')}</span>
           </button>
 
           <button 
@@ -352,7 +466,7 @@ export default function App() {
             }`}
           >
             <Cpu className="w-3.5 h-3.5 shrink-0" />
-            <span>Manufacturing</span>
+            <span>{getTranslation(config.language, 'manufacturing')}</span>
           </button>
 
           <button 
@@ -364,7 +478,19 @@ export default function App() {
             }`}
           >
             <Users className="w-3.5 h-3.5 shrink-0" />
-            <span>HR & Employees</span>
+            <span>{getTranslation(config.language, 'hr')}</span>
+          </button>
+
+          <button 
+            onClick={() => setActiveTab('crm')}
+            className={`w-full flex items-center gap-3 px-5 py-2.5 transition-all text-left text-[11px] uppercase tracking-wider ${
+              activeTab === 'crm' 
+                ? 'bg-[#334155] text-[#38bdf8] border-l-[3px] border-[#38bdf8]' 
+                : 'hover:bg-[#1e293b] hover:text-slate-200'
+            }`}
+          >
+            <Handshake className="w-3.5 h-3.5 shrink-0" />
+            <span>{getTranslation(config.language, 'crm')}</span>
           </button>
 
           <button 
@@ -376,7 +502,7 @@ export default function App() {
             }`}
           >
             <Settings className="w-3.5 h-3.5 shrink-0" />
-            <span>Settings</span>
+            <span>{getTranslation(config.language, 'settings')}</span>
           </button>
 
         </nav>
@@ -386,8 +512,8 @@ export default function App() {
           <div className="flex items-center gap-2.5 bg-[#0b0f19] p-3 rounded-lg border border-[#1e293b] text-left text-[11px]">
             <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
             <div>
-              <p className="font-bold text-slate-200 leading-none">Security System</p>
-              <p className="text-[9px] text-slate-500 mt-0.5">Session Secured</p>
+              <p className="font-bold text-slate-200 leading-none">{getTranslation(config.language, 'security_system')}</p>
+              <p className="text-[9px] text-slate-500 mt-0.5">{getTranslation(config.language, 'session_secured')}</p>
             </div>
           </div>
           <p className="text-[9px] text-slate-600 font-bold uppercase tracking-wider">Nova Forge Tech v2.4</p>
@@ -415,7 +541,7 @@ export default function App() {
             <Sparkles className="w-3 h-3 text-sky-500 shrink-0" />
             <span className="uppercase text-[9px] tracking-wider text-slate-400">Environment Location</span>
             <span className="text-slate-300">/</span>
-            <span className="text-slate-800 dark:text-slate-200 uppercase tracking-tight font-extrabold font-mono">{activeTab}</span>
+            <span className="text-slate-800 dark:text-slate-200 uppercase tracking-tight font-extrabold font-mono">{getTranslation(config.language, activeTab as any)}</span>
           </div>
 
           {/* Header Action widgets (Dark mode toggle, compact mobile nav) */}
@@ -423,7 +549,7 @@ export default function App() {
             
             {/* Standard Mobile Navigation tabs slider */}
             <div className="flex lg:hidden items-center gap-0.5 bg-slate-100 dark:bg-slate-800 p-0.5 rounded scrollbar-none overflow-x-auto max-w-[200px] sm:max-w-none text-[9px] font-bold uppercase">
-              {['dashboard', 'inventory', 'sales', 'manufacturing', 'hr'].map(tab => (
+              {['dashboard', 'inventory', 'sales', 'manufacturing', 'hr', 'crm'].map(tab => (
                 <button 
                   key={tab} 
                   onClick={() => setActiveTab(tab)}
@@ -440,12 +566,36 @@ export default function App() {
 
             {/* Dark theme toggle button */}
             <button 
+              id="theme-toggle-button"
               onClick={() => setDarkMode(!darkMode)}
-              className="p-1.5 rounded bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-sky-500 hover:border-sky-400 border border-slate-200/35 dark:border-slate-700/35 transition-all shadow-xs"
-              title="Toggle application style theme"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 hover:text-[#0ea5e9] dark:hover:text-amber-400 border border-slate-200 dark:border-slate-700/70 transition-all duration-300 transform active:scale-95 shadow-xs hover:shadow-sm sm:h-8 hover:border-[#0ea5e9]/50 dark:hover:border-amber-400/50 cursor-pointer font-bold text-[10px] tracking-wider uppercase"
+              title={config.language === 'tr' ? 'Sistem Temasını Değiştir' : 'Switch System Style Theme'}
             >
-              {darkMode ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+              {darkMode ? (
+                <>
+                  <Sun className="w-3.5 h-3.5 text-amber-400" />
+                  <span className="hidden xs:inline">{config.language === 'tr' ? 'Aydınlık' : 'Light'}</span>
+                </>
+              ) : (
+                <>
+                  <Moon className="w-3.5 h-3.5 text-[#0ea5e9]" />
+                  <span className="hidden xs:inline">{config.language === 'tr' ? 'Karanlık' : 'Dark'}</span>
+                </>
+              )}
             </button>
+
+            {/* Language dropdown */}
+            <select
+              value={config.language || 'en'}
+              onChange={(e) => {
+                const targetLanguage = e.target.value as Language;
+                handleUpdateConfig({ ...config, language: targetLanguage });
+              }}
+              className="px-2 py-1 select-none text-[10px] uppercase font-bold tracking-wider bg-slate-50 dark:bg-slate-800 text-[#0ea5e9] hover:border-sky-400 rounded border border-slate-200/35 dark:border-slate-700/35 outline-none cursor-pointer transition-all font-mono"
+            >
+              <option value="en">EN</option>
+              <option value="tr">TR</option>
+            </select>
 
           </div>
         </header>
@@ -490,6 +640,7 @@ export default function App() {
             <ProductionManager 
               workOrders={workOrders}
               employees={employees}
+              config={config}
               onAddWorkOrder={handleAddWorkOrder}
               onUpdateStepStatus={handleUpdateStepStatus}
               onUpdateOrderStatus={handleUpdateOrderStatus}
@@ -505,6 +656,25 @@ export default function App() {
               onPaySalary={handlePaySalary}
               onPayAllSalaries={handlePayAllSalaries}
               onDeleteEmployee={handleDeleteEmployee}
+            />
+          )}
+
+          {activeTab === 'crm' && (
+            <CRMManager 
+              contacts={contacts}
+              opportunities={opportunities}
+              interactions={interactions}
+              employees={employees}
+              config={config}
+              onAddContact={handleAddContact}
+              onUpdateContact={handleUpdateContact}
+              onDeleteContact={handleDeleteContact}
+              onAddOpportunity={handleAddOpportunity}
+              onUpdateOpportunityStage={handleUpdateOpportunityStage}
+              onDeleteOpportunity={handleDeleteOpportunity}
+              onAddInteraction={handleAddInteraction}
+              onUpdateSupportStatus={handleUpdateSupportStatus}
+              onDeleteInteraction={handleDeleteInteraction}
             />
           )}
 

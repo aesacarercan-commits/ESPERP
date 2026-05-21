@@ -1,9 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { 
-  Plus, Search, Filter, DollarSign, FileText, CheckCircle2, Truck, AlertCircle, Trash2, Clock, 
+  Plus, Search, DollarSign, FileText, CheckCircle2, Truck, AlertCircle, Trash2, Clock, 
   X, Check, Receipt, ChevronDown, Calendar, CreditCard, ExternalLink, RefreshCw
 } from 'lucide-react';
 import { Invoice, Product, ERPConfig } from '../types';
+import { getTranslation, Language } from '../lib/translations';
 
 interface SalesManagerProps {
   invoices: Invoice[];
@@ -26,6 +27,8 @@ export default function SalesManager({
   const [statusFilter, setStatusFilter] = useState<string>('All');
   const [isCreating, setIsCreating] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+
+  const currentLang = config.language || 'en';
 
   // Invoice Form State
   const [customerName, setCustomerName] = useState('');
@@ -100,7 +103,7 @@ export default function SalesManager({
       });
 
     if (finalItems.length === 0) {
-      alert("Please specify at least 1 valid product line item.");
+      alert(currentLang === 'tr' ? "Lütfen en az 1 adet geçerli kalem ürünü belirtin." : "Please specify at least 1 valid product line item.");
       return;
     }
 
@@ -171,105 +174,113 @@ export default function SalesManager({
     <div className="space-y-6 pt-2 text-left" id="sales-tab-panel">
       
       {/* Upper header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-xl shadow-xs animate-in fade-in">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <DollarSign className="w-5 h-5 text-indigo-500" />
-            <h3 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Commerce Ledger & Invoicing</h3>
+            <DollarSign className="w-5 h-5 text-[#0ea5e9]" />
+            <h3 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+              {getTranslation(currentLang, 'commerce_ledger_invoicing')}
+            </h3>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Publish client accounts invoices, track outstanding receivables, and record completed cash events.
+            {getTranslation(currentLang, 'commerce_ledger_descr')}
           </p>
         </div>
 
         <button 
           onClick={() => setIsCreating(!isCreating)}
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 self-start sm:self-auto transition-transform hover:scale-105"
+          className="px-4 py-2 bg-[#0ea5e9] hover:bg-sky-400 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-1.5 self-start sm:self-auto transition-transform hover:scale-105 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          <span>Launch Invoice Wizard</span>
+          <span>{getTranslation(currentLang, 'add_invoice')}</span>
         </button>
       </div>
 
       {/* Mini Financial Health Banner */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-1 text-xs">
-          <p className="text-slate-400 font-bold uppercase tracking-widest text-[9px]">Receipts Booked</p>
+          <p className="text-slate-400 font-bold uppercase tracking-widest text-[9px]">{getTranslation(currentLang, 'receipts_booked')}</p>
           <p className="text-lg font-mono font-bold text-emerald-600">
             {currencySymbol}{financeMetrics.totalPaid.toLocaleString()}
           </p>
-          <span className="text-[9px] font-bold text-slate-400">Cleared Cash Receipts</span>
+          <span className="text-[9px] font-bold text-slate-400">{currentLang === 'tr' ? 'Tahsil Edilen Tutar' : 'Cleared Cash Receipts'}</span>
         </div>
 
-        <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-1 text-xs">
-          <p className="text-slate-400 font-bold uppercase tracking-widest text-[9px]">Outstanding Receivables</p>
-          <p className="text-lg font-mono font-bold text-indigo-500">
+        <div className="bg-slate-50 dark:bg-slate-955 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-1 text-xs font-semibold">
+          <p className="text-slate-400 font-bold uppercase tracking-widest text-[9px]">{getTranslation(currentLang, 'outstanding_receivables')}</p>
+          <p className="text-lg font-mono font-bold text-[#0ea5e9]">
             {currencySymbol}{financeMetrics.totalPending.toLocaleString()}
           </p>
-          <span className="text-[9px] font-bold text-slate-400">Under Active Invoicing</span>
+          <span className="text-[9px] font-bold text-slate-400">{currentLang === 'tr' ? 'Tahsilat Bekleyen Senet' : 'Under Active Invoicing'}</span>
         </div>
 
-        <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-250 dark:border-slate-800 space-y-1 text-xs relative overflow-hidden">
+        <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-250 dark:border-slate-800 space-y-1 text-xs relative overflow-hidden font-medium">
           <div className="absolute top-0 right-0 w-1.5 h-full bg-red-500"></div>
-          <p className="text-slate-400 font-bold uppercase tracking-widest text-[9px]">Overdue Exposure</p>
+          <p className="text-slate-400 font-bold uppercase tracking-widest text-[9px]">{getTranslation(currentLang, 'overdue_exposure')}</p>
           <p className="text-lg font-mono font-bold text-red-600">
             {currencySymbol}{financeMetrics.totalOverdue.toLocaleString()}
           </p>
-          <span className="text-[9px] font-bold text-red-500">Exceeded Payment Rules</span>
+          <span className="text-[9px] font-bold text-red-500">{currentLang === 'tr' ? 'Vadesi Geçmiş Tutar' : 'Exceeded Payment Rules'}</span>
         </div>
 
-        <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-1 text-xs">
-          <p className="text-slate-400 font-bold uppercase tracking-widest text-[9px]">Draft Estimates</p>
+        <div className="bg-slate-50 dark:bg-slate-955 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-1 text-xs font-semibold font-mono">
+          <p className="text-slate-400 font-bold uppercase tracking-widest text-[9px]">{getTranslation(currentLang, 'draft_estimates')}</p>
           <p className="text-lg font-mono font-bold text-slate-500">
             {currencySymbol}{financeMetrics.totalDraft.toLocaleString()}
           </p>
-          <span className="text-[9px] font-bold text-slate-400">In Quotation Status</span>
+          <span className="text-[9px] font-bold text-slate-400">{currentLang === 'tr' ? 'Teklif Aşamasında' : 'In Quotation Status'}</span>
         </div>
       </div>
 
       {/* Slide down Invoice Creation Form */}
       {isCreating && (
-        <form onSubmit={handleCreateSubmit} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-md space-y-5 animate-in fade-in duration-200">
+        <form onSubmit={handleCreateSubmit} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-md space-y-5 animate-in fade-in duration-200 text-xs">
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-            <h4 className="text-xs font-black text-indigo-600 uppercase tracking-widest flex items-center gap-1">
+            <h4 className="text-xs font-black text-[#0ea5e9] uppercase tracking-widest flex items-center gap-1">
               <Receipt className="w-4 h-4" />
-              <span>Create Dynamic Invoice Profile ({generatedInvoiceNumber})</span>
+              <span>{currentLang === 'tr' ? `Dinamik Fatura Profili Oluştur (${generatedInvoiceNumber})` : `Create Dynamic Invoice Profile (${generatedInvoiceNumber})`}</span>
             </h4>
-            <button type="button" onClick={() => setIsCreating(false)} className="text-slate-450 hover:text-slate-650 p-1">
+            <button type="button" onClick={() => setIsCreating(false)} className="text-slate-450 hover:text-slate-650 p-1 cursor-pointer">
               <X className="w-4 h-4" />
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-medium">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-medium">
             <div className="space-y-1">
-              <label className="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wide block">Client / Account Name *</label>
+              <label className="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wide block">
+                {currentLang === 'tr' ? 'Müşteri / Cari Ünvanı' : 'Client / Account Name'} *
+              </label>
               <input 
                 type="text" 
                 placeholder="ACME Heavy Machinery Ltd" 
                 required
-                className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none text-slate-850 dark:text-white font-bold"
+                className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-705 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none text-slate-850 dark:text-white font-bold"
                 value={customerName}
                 onChange={e => setCustomerName(e.target.value)}
               />
             </div>
 
             <div className="space-y-1">
-              <label className="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wide block">Payment Due Deadline *</label>
+              <label className="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wide block">
+                {currentLang === 'tr' ? 'Ödeme Vade Tarihi' : 'Payment Due Deadline'} *
+              </label>
               <input 
                 type="date" 
                 required
-                className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none text-slate-850 dark:text-white font-mono font-bold"
+                className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-705 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none text-slate-850 dark:text-white font-mono font-bold"
                 value={deadline}
                 onChange={e => setDeadline(e.target.value)}
               />
             </div>
 
             <div className="space-y-1">
-              <label className="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wide block">Invoicing Memo / Notes</label>
+              <label className="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wide block">
+                {currentLang === 'tr' ? 'Fatura Notları' : 'Invoicing Memo / Notes'}
+              </label>
               <input 
                 type="text" 
                 placeholder="Purchase Order: #PO-991, Delivery terms: CIP" 
-                className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none text-slate-850 dark:text-white font-bold"
+                className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-705 bg-slate-50 dark:bg-slate-800 rounded-xl outline-none text-slate-850 dark:text-white font-bold"
                 value={notes}
                 onChange={e => setNotes(e.target.value)}
               />
@@ -279,29 +290,29 @@ export default function SalesManager({
           {/* Itemized Lines */}
           <div className="space-y-3">
             <div className="flex justify-between items-center bg-slate-50/50 dark:bg-slate-950/20 px-3.5 py-2 rounded-lg border border-slate-150 dark:border-slate-800">
-              <span className="text-[10px] uppercase font-black tracking-widest text-slate-400">Line Items List</span>
+              <span className="text-[10px] uppercase font-black tracking-widest text-slate-400">{currentLang === 'tr' ? 'Fatura Kalemleri' : 'Line Items List'}</span>
               <button 
                 type="button" 
                 onClick={handleAddItemLine}
-                className="text-[10px] text-indigo-600 dark:text-indigo-400 font-extrabold hover:underline uppercase"
+                className="text-[10px] text-sky-500 font-extrabold hover:underline uppercase cursor-pointer"
               >
-                + Add Itemized Line
+                + {currentLang === 'tr' ? 'Kalem Satırı Ekle' : 'Add Itemized Line'}
               </button>
             </div>
 
             <div className="space-y-2 max-h-48 overflow-y-auto">
               {formItems.map((item, index) => (
-                <div key={index} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-slate-50/30 dark:bg-slate-950/10 p-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 text-xs text-left">
+                <div key={index} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-slate-50/30 dark:bg-slate-950/10 p-3 rounded-xl border border-dashed border-slate-100 dark:border-slate-800 text-xs text-left animate-in fade-in">
                   
                   {/* Product select picker */}
                   <div className="flex-1 space-y-0.5">
-                    <label className="text-[9px] text-slate-450 uppercase font-bold tracking-tight">Active SKU Catalog</label>
+                    <label className="text-[9px] text-slate-450 uppercase font-bold tracking-tight">{currentLang === 'tr' ? 'Ürün Seçiniz' : 'Active SKU Catalog'}</label>
                     <select 
                       className="w-full px-3.5 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-705 rounded-xl font-bold text-slate-900 dark:text-white"
                       value={item.productId}
                       onChange={e => handleProductChange(index, e.target.value)}
                     >
-                      <option value="">-- Choose Product SKU --</option>
+                      <option value="">-- {currentLang === 'tr' ? 'Seçiniz' : 'Choose Product SKU'} --</option>
                       {products.map(p => (
                         <option key={p.id} value={p.id}>
                           {p.name} (SKU: {p.sku}) -- Price: {currencySymbol}{p.salesPrice}
@@ -312,7 +323,7 @@ export default function SalesManager({
 
                   {/* Quantity */}
                   <div className="w-24 space-y-0.5">
-                    <label className="text-[9px] text-slate-450 uppercase font-bold tracking-tight text-right block">Quantity</label>
+                    <label className="text-[9px] text-slate-450 uppercase font-bold tracking-tight text-right block">{currentLang === 'tr' ? 'Adet' : 'Quantity'}</label>
                     <input 
                       type="number" 
                       min="1" 
@@ -324,7 +335,7 @@ export default function SalesManager({
 
                   {/* Sales unit cost override */}
                   <div className="w-32 space-y-0.5">
-                    <label className="text-[9px] text-slate-450 uppercase font-bold tracking-tight text-right block">Negotiated Price</label>
+                    <label className="text-[9px] text-slate-450 uppercase font-bold tracking-tight text-right block">{currentLang === 'tr' ? 'Anlaşmalı Fiyat' : 'Negotiated Price'}</label>
                     <div className="relative">
                       <span className="absolute left-3.5 top-2 text-slate-400 font-bold">{currencySymbol}</span>
                       <input 
@@ -340,7 +351,7 @@ export default function SalesManager({
 
                   {/* Calculated Line Value */}
                   <div className="w-28 text-right self-end pb-2">
-                    <p className="text-[9px] text-slate-400 font-bold">Line Subtotal</p>
+                    <p className="text-[9px] text-slate-400 font-bold">{currentLang === 'tr' ? 'Ara Toplam' : 'Line Subtotal'}</p>
                     <p className="font-mono font-bold text-slate-900 dark:text-white">
                       {currencySymbol}{(item.qty * item.price).toLocaleString()}
                     </p>
@@ -350,7 +361,7 @@ export default function SalesManager({
                     <button 
                       type="button" 
                       onClick={() => handleRemoveItemLine(index)} 
-                      className="p-2 text-red-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg self-end mb-1"
+                      className="p-2 text-red-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-955/10 rounded-lg self-end mb-1 cursor-pointer"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -364,29 +375,29 @@ export default function SalesManager({
             <button 
               type="button" 
               onClick={() => setIsCreating(false)}
-              className="px-4 py-2 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl font-bold"
+              className="px-4 py-2 border border-slate-205 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl font-bold cursor-pointer"
             >
-              Cancel
+              {getTranslation(currentLang, 'cancel')}
             </button>
             <button 
               type="submit" 
-              className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl"
+              className="px-5 py-2 bg-[#0ea5e9] hover:bg-sky-400 text-slate-950 font-bold rounded-xl cursor-pointer"
             >
-              Publish Estimate / Draft
+              {currentLang === 'tr' ? 'Teklif / Taslak Oluştur' : 'Publish Estimate / Draft'}
             </button>
           </div>
         </form>
       )}
 
       {/* Directory Filter Panel */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-xl shadow-sm flex flex-col md:flex-row md:items-center gap-4 text-xs">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-xl shadow-sm flex flex-col md:flex-row md:items-center gap-4 text-xs animate-in fade-in">
         
         {/* Simple Search bar */}
-        <div className="flex-1 flex items-center bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 py-2 px-3 rounded-lg">
+        <div className="flex-1 flex items-center bg-slate-50 dark:bg-slate-955 border border-slate-200 dark:border-slate-800 py-2 px-3 rounded-lg">
           <Search className="w-4 h-4 text-slate-400 mr-2 shrink-0" />
           <input 
             type="text" 
-            placeholder="Search commerce by invoice prefix or client name..." 
+            placeholder={currentLang === 'tr' ? 'Faturaları numara veya müşteri adına göre arayın...' : 'Search commerce by invoice prefix or client name...'}
             className="bg-transparent border-none outline-none font-bold text-slate-800 dark:text-white w-full placeholder-slate-400"
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
@@ -394,19 +405,19 @@ export default function SalesManager({
         </div>
 
         {/* Filter categories dropdown */}
-        <div className="flex items-center gap-2 mt-1 md:mt-0">
-          <span className="text-slate-450 uppercase tracking-widest text-[9px] font-bold">Invoiced Status:</span>
+        <div className="flex items-center gap-2 mt-1 md:mt-0 flex-wrap">
+          <span className="text-slate-450 uppercase tracking-widest text-[9px] font-bold">{currentLang === 'tr' ? 'Fatura Statüsü' : 'Invoiced Status'}:</span>
           {['All', 'Paid', 'Pending', 'Shipped', 'Draft'].map(f => (
             <button 
               key={f} 
               onClick={() => setStatusFilter(f)} 
-              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all cursor-pointer ${
                 statusFilter === f 
-                  ? 'bg-indigo-600 text-white shadow-md font-extrabold' 
-                  : 'bg-slate-50 dark:bg-slate-950 dark:text-slate-400 hover:text-indigo-600 border border-slate-205 dark:border-slate-850'
+                  ? 'bg-sky-500 text-slate-950 shadow-md font-extrabold' 
+                  : 'bg-slate-55 dark:bg-slate-950 dark:text-slate-400 hover:text-sky-500 border border-slate-205 dark:border-slate-850'
               }`}
             >
-              {f}
+              {f === 'All' ? getTranslation(currentLang, 'all') : f}
             </button>
           ))}
         </div>
@@ -417,19 +428,19 @@ export default function SalesManager({
 
         {/* Ledger Invoices listing table (2-Span Column) */}
         <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded shadow-xs overflow-hidden text-xs">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-[11px]">
-              <thead className="bg-slate-50/70 dark:bg-slate-950/20 text-slate-500 dark:text-slate-400 uppercase tracking-widest text-[9px] font-bold border-b border-slate-200 dark:border-slate-800">
+          <div className="overflow-x-auto font-medium">
+            <table className="w-full text-left border-collapse text-[11px] text-slate-650 dark:text-slate-350">
+              <thead className="bg-slate-50/70 dark:bg-slate-950/20 text-slate-500 dark:text-slate-400 uppercase tracking-widest text-[9px] font-bold border-b border-slate-200 dark:border-slate-800 select-none">
                 <tr>
-                  <th className="py-2 px-3">Invoice ID</th>
-                  <th className="py-2 px-3">Client / Company Name</th>
-                  <th className="py-2 px-3">Termin Date</th>
-                  <th className="py-2 px-3 text-right">Value Amount</th>
-                  <th className="py-2 px-3 text-center">Status</th>
-                  <th className="py-2 px-3 text-center">Operations</th>
+                  <th className="py-2.5 px-3">{currentLang === 'tr' ? 'Fatura ID' : 'Invoice ID'}</th>
+                  <th className="py-2.5 px-3">{currentLang === 'tr' ? 'Müşteri / Cari Ünvanı' : 'Client / Company Name'}</th>
+                  <th className="py-2.5 px-3">{currentLang === 'tr' ? 'Vade Tarihi' : 'Termin Date'}</th>
+                  <th className="py-2.5 px-3 text-right">{currentLang === 'tr' ? 'Genel Toplam' : 'Value Amount'}</th>
+                  <th className="py-2.5 px-3 text-center">{currentLang === 'tr' ? 'Statü' : 'Status'}</th>
+                  <th className="py-2.5 px-3 text-center">{currentLang === 'tr' ? 'İşlemler' : 'Operations'}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium text-slate-700 dark:text-slate-350">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {filteredInvoices.map((inv) => {
                   const todayStr = new Date().toISOString().split('T')[0];
                   const isOverdue = (inv.status === 'Pending' || inv.status === 'Shipped') && inv.deadline < todayStr;
@@ -443,7 +454,7 @@ export default function SalesManager({
                       }`}
                     >
                       {/* Invoice # */}
-                      <td className="py-1.5 px-3 font-mono font-bold text-slate-800 dark:text-white">
+                      <td className="py-2 px-3 font-mono font-bold text-slate-800 dark:text-white">
                         <div className="flex items-center gap-1">
                           <FileText className="w-3.5 h-3.5 text-slate-400" />
                           <span>{inv.invoiceNumber}</span>
@@ -451,83 +462,83 @@ export default function SalesManager({
                       </td>
 
                       {/* Customer Name */}
-                      <td className="py-1.5 px-3">
+                      <td className="py-2 px-3">
                         <div className="space-y-0.5 max-w-[180px]">
                           <p className="font-bold text-slate-900 dark:text-white uppercase truncate text-[11px]">{inv.customerName}</p>
-                          <p className="text-[9px] text-slate-400 uppercase font-semibold">{inv.items.length} item lines defined</p>
+                          <p className="text-[9px] text-slate-400 uppercase font-semibold">{inv.items.length} {currentLang === 'tr' ? 'kalem tanımlı' : 'item lines defined'}</p>
                         </div>
                       </td>
 
                       {/* Deadline & Warning block */}
-                      <td className="py-1.5 px-3 text-slate-500 dark:text-slate-400 font-bold">
+                      <td className="py-2 px-3 text-slate-500 dark:text-slate-400 font-bold">
                         <div className="space-y-0.5">
                           <p className="font-mono text-[10px]">{new Date(inv.deadline).toLocaleDateString()}</p>
                           {isOverdue && (
                             <span className="text-[8px] text-rose-500 uppercase font-bold flex items-center gap-0.5">
-                              <AlertCircle className="w-2.5 h-2.5 shrink-0" /> Out of Rules
+                              <AlertCircle className="w-2.5 h-2.5 shrink-0 animate-pulse" /> {currentLang === 'tr' ? 'Vadesi Geçmiş' : 'Out of Rules'}
                             </span>
                           )}
                         </div>
                       </td>
 
                       {/* Value Count */}
-                      <td className="py-1.5 px-3 text-right font-mono font-bold text-slate-900 dark:text-white">
+                      <td className="py-2 px-3 text-right font-mono font-bold text-slate-900 dark:text-white">
                         {currencySymbol}{inv.totalAmount.toLocaleString()}
                       </td>
 
                       {/* Invoice phase */}
-                      <td className="py-1.5 px-3 text-center">
-                        <span className={`inline-block px-1.5 py-0.2 rounded text-[9px] font-bold uppercase tracking-wider ${
+                      <td className="py-2 px-3 text-center">
+                        <span className={`inline-block px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${
                           inv.status === 'Paid'
                             ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30'
                             : inv.status === 'Pending'
                             ? 'bg-sky-50 dark:bg-sky-950/20 text-sky-600 dark:text-sky-400 border border-sky-100 dark:border-sky-900/30'
                             : inv.status === 'Shipped'
                             ? 'bg-cyan-50 dark:bg-cyan-950/20 text-cyan-600 dark:text-cyan-400 border border-cyan-150 dark:border-cyan-900/30'
-                            : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-505'
                         }`}>
                           {inv.status}
                         </span>
                       </td>
 
                       {/* Quick updates */}
-                      <td className="py-1.5 px-3 text-center" onClick={e => e.stopPropagation()}>
+                      <td className="py-2 px-3 text-center" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center justify-center gap-1.5">
                           
                           {inv.status === 'Draft' && (
                             <button 
                               onClick={() => onUpdateInvoiceStatus(inv.id, 'Pending')}
-                              className="px-1.5 py-0.5 bg-sky-500 text-slate-950 hover:bg-sky-400 font-bold rounded text-[9px] uppercase tracking-wider"
-                              title="Commit estimate to ledger"
+                              className="px-1.5 py-0.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black rounded text-[9px] uppercase tracking-wider cursor-pointer"
+                              title={currentLang === 'tr' ? 'Ledgera Gönder' : 'Commit estimate to ledger'}
                             >
-                              Publish
+                              {currentLang === 'tr' ? 'Yayınla' : 'Publish'}
                             </button>
                           )}
 
                           {inv.status === 'Pending' && (
                             <button 
                               onClick={() => onUpdateInvoiceStatus(inv.id, 'Paid')}
-                              className="px-1.5 py-0.5 bg-emerald-500 text-white hover:bg-emerald-400 font-bold rounded text-[9px] uppercase tracking-wider"
-                              title="Declare fully paid"
+                              className="px-1.5 py-0.5 bg-emerald-500 hover:bg-emerald-450 text-white font-extrabold rounded text-[9px] uppercase tracking-wider cursor-pointer"
+                              title={currentLang === 'tr' ? 'Tahsil Edildi' : 'Declare fully paid'}
                             >
-                              Settle
+                              {currentLang === 'tr' ? 'Kapat' : 'Settle'}
                             </button>
                           )}
 
                           {inv.status === 'Paid' && (
                             <button 
                               onClick={() => onUpdateInvoiceStatus(inv.id, 'Shipped')}
-                              className="px-1.5 py-0.5 bg-sky-500 text-slate-950 hover:bg-sky-400 font-bold rounded text-[9px] uppercase tracking-wider"
-                              title="Declare dispatched"
+                              className="px-1.5 py-0.5 bg-sky-500 hover:bg-sky-450 text-slate-950 font-bold rounded text-[9px] uppercase tracking-wider cursor-pointer"
+                              title={currentLang === 'tr' ? 'Kargoya Verildi' : 'Declare dispatched'}
                             >
-                              Ship
+                              {currentLang === 'tr' ? 'Gönder' : 'Ship'}
                             </button>
                           )}
 
                           <button 
                             onClick={() => onDeleteInvoice(inv.id)}
-                            className="p-1 text-slate-400 hover:text-red-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded"
-                            title="Discard order record"
+                            className="p-1 text-slate-400 hover:text-red-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded cursor-pointer"
+                            title={currentLang === 'tr' ? 'Faturayı İptal Et' : 'Discard order record'}
                           >
                             <Trash2 className="w-3 h-3" />
                           </button>
@@ -540,7 +551,7 @@ export default function SalesManager({
                 {filteredInvoices.length === 0 && (
                   <tr>
                     <td colSpan={6} className="py-12 text-center text-slate-450 font-bold uppercase tracking-widest bg-slate-50/10">
-                      No invoices identified as matching this query
+                      {currentLang === 'tr' ? 'Arama kriterlerine uygun fatura bulunamadı' : 'No invoices identified as matching this query'}
                     </td>
                   </tr>
                 )}
@@ -549,97 +560,146 @@ export default function SalesManager({
           </div>
         </div>
 
-        {/* Selected Invoice Drilldown Receipt Card Panel (1-Span column) */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm p-5 space-y-5 text-xs">
+        {/* Invoice details sheet drawer pane (1-Span) */}
+        <div>
           {selectedInvoice ? (
-            <div className="space-y-5 animate-in fade-in duration-200">
-              
-              {/* Receipt Header info */}
-              <div className="flex items-start justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-                <div className="space-y-0.5 text-left">
-                  <span className="font-mono text-slate-400 font-bold uppercase text-[9px]">Receipt Sheet</span>
-                  <h4 className="text-sm font-bold text-slate-900 dark:text-white font-mono">{selectedInvoice.invoiceNumber}</h4>
-                  <p className="text-[10px] text-slate-500">Issued On: {new Date(selectedInvoice.date).toLocaleDateString()}</p>
+            <div className="bg-white dark:bg-slate-900 border border-slate-205 dark:border-slate-800 rounded-2xl p-5 space-y-4 shadow-sm animate-in fade-in duration-300">
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-805 pb-3">
+                <div className="space-y-0.5">
+                  <span className="font-mono text-sky-500 font-bold text-[10px] block leading-none">{selectedInvoice.invoiceNumber}</span>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider leading-none">
+                    {currentLang === 'tr' ? 'BİLGİ YAPRAĞI' : 'LEDGER ACCOUNT'}
+                  </span>
                 </div>
-                
                 <button 
                   onClick={() => setSelectedInvoice(null)}
-                  className="p-1 border border-slate-200 dark:border-slate-800 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900"
+                  className="p-1 rounded text-slate-400 hover:text-slate-650 hover:bg-slate-50 dark:hover:bg-slate-850 cursor-pointer"
                 >
-                  <X className="w-3 h-3" />
+                  <X className="w-3.5 h-3.5" />
                 </button>
               </div>
 
-              {/* Client detailed address */}
-              <div className="space-y-2 text-left bg-slate-50/70 dark:bg-slate-950/25 p-3.5 rounded-xl border border-slate-150 dark:border-slate-820">
-                <p className="text-[9px] uppercase font-black text-indigo-600">Client Recipient</p>
-                <h5 className="font-black text-slate-850 dark:text-white text-[13px]">{selectedInvoice.customerName}</h5>
-                <p className="text-[10px] text-slate-400 font-medium">Payment Deadline Range: {selectedInvoice.deadline}</p>
+              {/* Status block info */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[8.5px] uppercase tracking-widest font-black text-slate-400">{currentLang === 'tr' ? 'CARİ HESAP' : 'CLIENT CARD'}</p>
+                  <p className="text-xs font-extrabold text-slate-800 dark:text-white uppercase leading-tight mt-0.5">{selectedInvoice.customerName}</p>
+                </div>
+
+                <div className="text-right">
+                  <span className={`inline-block px-2 py-0.5 rounded text-[9.5px] font-black tracking-wider uppercase ${
+                    selectedInvoice.status === 'Paid' ? 'bg-emerald-500/10 text-emerald-500' :
+                    selectedInvoice.status === 'Pending' ? 'bg-[#0ea5e9]/10 text-[#0ea5e9]' :
+                    selectedInvoice.status === 'Shipped' ? 'bg-cyan-500/10 text-cyan-400' :
+                    'bg-slate-100 dark:bg-slate-800 text-slate-500'
+                  }`}>
+                    {selectedInvoice.status}
+                  </span>
+                </div>
               </div>
 
-              {/* Product list */}
-              <div className="space-y-2 text-left">
-                <p className="text-[9px] uppercase font-black tracking-widest text-slate-400">Bill Breakdown</p>
-                <div className="divide-y divide-slate-100 dark:divide-slate-800 space-y-1">
-                  {selectedInvoice.items.map((line, idx) => (
-                    <div key={idx} className="pt-2 flex items-center justify-between text-xs">
-                      <div className="space-y-0.5">
-                        <p className="font-bold text-slate-800 dark:text-slate-200 uppercase truncate max-w-[150px]">{line.name}</p>
-                        <p className="text-[10px] text-slate-500">{line.qty} units × {currencySymbol}{line.price}</p>
+              {/* Deadline & Date parameters */}
+              <div className="grid grid-cols-2 gap-4 text-[10px] text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-950 p-2.5 rounded-xl border border-slate-100 dark:border-slate-805">
+                <div>
+                  <span className="block text-[8px] font-black text-slate-450 uppercase leading-normal">{currentLang === 'tr' ? 'DÜZENLEME TARİHİ' : 'ISSUED ON'}</span>
+                  <span className="font-mono font-bold text-slate-800 dark:text-slate-300">{selectedInvoice.date}</span>
+                </div>
+                <div>
+                  <span className="block text-[8px] font-black text-slate-450 uppercase leading-normal">{currentLang === 'tr' ? 'VADE TARİHİ' : 'DUE DEADLINE'}</span>
+                  <span className="font-mono font-bold text-slate-800 dark:text-slate-300">{selectedInvoice.deadline}</span>
+                </div>
+              </div>
+
+              {/* Itemized product lists table */}
+              <div className="space-y-1.5">
+                <span className="text-[8px] uppercase tracking-widest font-bold text-slate-400 block">{currentLang === 'tr' ? 'DETAYLI KALEM DÖKÜMÜ' : 'ITEMIZED BREAKDOWN'}</span>
+                
+                <div className="space-y-1 max-h-40 overflow-y-auto pr-1">
+                  {selectedInvoice.items.map((it, idx) => (
+                    <div key={idx} className="flex justify-between items-center bg-slate-50/50 dark:bg-slate-955/25 p-2 rounded-lg border border-slate-150/40 dark:border-slate-800 text-[10.5px]">
+                      <div className="space-y-0.5 min-w-0 flex-1">
+                        <span className="block font-bold text-slate-800 dark:text-slate-200 truncate leading-tight">{it.name}</span>
+                        <span className="text-[9px] text-slate-400 block leading-none">{it.qty} pcs x {currencySymbol}{it.price}</span>
                       </div>
-                      <span className="font-mono font-bold text-slate-900 dark:text-white">
-                        {currencySymbol}{(line.qty * line.price).toLocaleString()}
+                      <span className="font-mono font-black text-slate-800 dark:text-slate-200 shrink-0 ml-2">
+                        {currencySymbol}{(it.qty * it.price).toLocaleString()}
                       </span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Calculated dynamic math block */}
-              <div className="pt-4 border-t border-slate-150 dark:border-slate-800 text-left space-y-2 font-mono">
-                <div className="flex justify-between text-slate-500">
-                  <span>Subtotal Amount:</span>
-                  <span>{currencySymbol}{Math.round(selectedInvoice.totalAmount / (1 + selectedInvoice.taxRate / 100)).toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between text-slate-500">
-                  <span>Sales Tax Rate ({selectedInvoice.taxRate}%):</span>
-                  <span>{currencySymbol}{Math.round(selectedInvoice.totalAmount - (selectedInvoice.totalAmount / (1 + selectedInvoice.taxRate / 100))).toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between font-black text-base text-slate-900 dark:text-white pt-1 border-t border-dashed border-slate-200 dark:border-slate-800">
-                  <span>Ledger Value:</span>
-                  <span>{currencySymbol}{selectedInvoice.totalAmount.toLocaleString()}</span>
-                </div>
-              </div>
+              {/* Sequential summary ledger math */}
+              {(() => {
+                const subTotal = selectedInvoice.items.reduce((acc, it) => acc + (it.qty * it.price), 0);
+                const taxVal = Math.round(subTotal * (selectedInvoice.taxRate / 100));
 
-              {/* Outstanding Notes block */}
+                return (
+                  <div className="space-y-1.5 pt-2 border-t border-slate-150 dark:border-slate-800 text-[10.5px] font-bold text-slate-650 dark:text-slate-350">
+                    <div className="flex justify-between">
+                      <span className="font-medium text-slate-400">{currentLang === 'tr' ? 'Ara Toplam' : 'Subtotal'}</span>
+                      <span className="font-mono">{currencySymbol}{subTotal.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium text-slate-400">{currentLang === 'tr' ? 'KDV' : 'Sales Tax'} (%{selectedInvoice.taxRate})</span>
+                      <span className="font-mono">+{currencySymbol}{taxVal.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between text-xs font-black text-slate-900 dark:text-white pt-1.5 border-t border-dashed border-slate-200 dark:border-slate-800">
+                      <span>{currentLang === 'tr' ? 'Genel Toplam' : 'Grand Total'}</span>
+                      <span className="font-mono text-emerald-500 text-sm">{currencySymbol}{selectedInvoice.totalAmount.toLocaleString()}</span>
+                    </div>
+                  </div>
+                );
+              })()}
+
               {selectedInvoice.notes && (
-                <div className="p-3 bg-indigo-50/40 dark:bg-indigo-950/20 rounded-xl text-left border border-slate-150 dark:border-slate-800 mt-2">
-                  <span className="text-[8px] font-black uppercase text-indigo-500">Ledger Memo</span>
-                  <p className="text-[11px] text-slate-600 dark:text-slate-350 italic mt-0.5">{selectedInvoice.notes}</p>
+                <div className="mt-2.5 bg-slate-50 dark:bg-slate-950 p-2.5 rounded-xl border border-slate-100 dark:border-slate-805 text-[9.5px] italic text-slate-400 leading-relaxed">
+                  <span className="block font-bold uppercase tracking-wider text-[8px] text-slate-450 not-italic mb-0.5 leading-none">{currentLang === 'tr' ? 'Fatura Notu' : 'Memo Notes'}</span>
+                  "{selectedInvoice.notes}"
                 </div>
               )}
 
-              {/* Quick printing mock block */}
-              <button 
-                onClick={() => window.print()} 
-                className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-transform"
-              >
-                <Receipt className="w-4 h-4" />
-                <span>Compile PDF Printout</span>
-              </button>
+              {/* Status specific footer action details */}
+              <div className="pt-2 flex justify-stretch gap-2">
+                {selectedInvoice.status === 'Draft' && (
+                  <button 
+                    onClick={() => { onUpdateInvoiceStatus(selectedInvoice.id, 'Pending'); setSelectedInvoice(null); }}
+                    className="w-full bg-[#0ea5e9] text-slate-950 font-black py-2 rounded-xl text-[10.5px] uppercase tracking-wider cursor-pointer"
+                  >
+                    {currentLang === 'tr' ? 'Ledgera Kaydet & Yayınla' : 'Commit & Send to Client'}
+                  </button>
+                )}
+
+                {selectedInvoice.status === 'Pending' && (
+                  <button 
+                    onClick={() => { onUpdateInvoiceStatus(selectedInvoice.id, 'Paid'); setSelectedInvoice(null); }}
+                    className="w-full bg-emerald-500 text-white font-black py-2 rounded-xl text-[10.5px] uppercase tracking-wider cursor-pointer"
+                  >
+                    {currentLang === 'tr' ? 'Ödemeyi Tahsil Et' : 'Clear & Cash-In Receipt'}
+                  </button>
+                )}
+
+                {selectedInvoice.status === 'Paid' && (
+                  <button 
+                    onClick={() => { onUpdateInvoiceStatus(selectedInvoice.id, 'Shipped'); setSelectedInvoice(null); }}
+                    className="w-full bg-[#0ea5e9] text-slate-950 font-bold py-2 rounded-xl text-[10.5px] uppercase tracking-wider cursor-pointer"
+                  >
+                    {currentLang === 'tr' ? 'Sevk Et' : 'Dispatched to Transport'}
+                  </button>
+                )}
+              </div>
 
             </div>
           ) : (
-            <div className="py-20 text-center text-slate-400 space-y-2">
-              <Receipt className="w-12 h-12 text-slate-300 mx-auto opacity-40 animate-pulse" />
-              <p className="font-bold uppercase tracking-wider text-[10px]">No invoice selected for inspection</p>
-              <p className="text-[10px] text-slate-500 font-medium">Highlight any ledger line to inspect receipt summaries or generate PDF prints.</p>
+            <div className="bg-white dark:bg-slate-900 border border-dashed border-slate-205 dark:border-slate-800 rounded-2xl py-20 text-center text-slate-450 font-semibold space-y-2">
+              <Receipt className="w-10 h-10 text-slate-350 mx-auto animate-pulse" />
+              <p className="uppercase tracking-widest text-[9.5px] font-bold text-slate-500">{currentLang === 'tr' ? 'Fatura Seçilmedi' : 'No Invoice Chosen'}</p>
+              <p className="text-[10px] max-w-[200px] mx-auto text-slate-400">{currentLang === 'tr' ? 'KDV rasyolarını, kalem detaylarını ve ödeme geçmişini görüntülemek için soldan bir fatura seçin.' : 'Select any active invoice from the left register to verify details, print records or reconcile pay.'}</p>
             </div>
           )}
         </div>
 
       </div>
-
     </div>
   );
 }

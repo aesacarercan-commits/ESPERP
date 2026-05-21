@@ -37,6 +37,9 @@ export interface WorkStep {
   status: 'Pending' | 'In_Progress' | 'Completed';
   completedAt?: string;
   completedBy?: string;
+  category?: 'Kapak&Gövde' | 'Raylar' | 'elektrik';
+  columns?: number[];
+  baseStepName?: string;
 }
 
 export interface WorkOrder {
@@ -69,4 +72,39 @@ export interface ERPConfig {
   taxNumber: string;
   currency: 'USD' | 'EUR' | 'TRY' | 'GBP';
   taxRate: number;
+  language?: 'en' | 'tr';
 }
+
+export interface CRMContact {
+  id: string;
+  name: string;
+  companyName: string;
+  email: string;
+  phone: string;
+  role: string;
+  status: 'Lead' | 'Customer' | 'Support_Required' | 'Inactive';
+  notes?: string;
+  createdAt: string;
+}
+
+export interface CRMOpportunity {
+  id: string;
+  title: string;
+  contactId: string;
+  stage: 'Lead' | 'Contacted' | 'Proposal_Sent' | 'Negotiation' | 'Won' | 'Lost';
+  value: number;
+  estCloseDate: string;
+  assignedTo?: string;
+  notes?: string;
+}
+
+export interface CRMInteraction {
+  id: string;
+  contactId: string;
+  type: 'Call' | 'Email' | 'Meeting' | 'Support_Ticket';
+  title: string;
+  notes: string;
+  date: string;
+  supportStatus?: 'Open' | 'In_Progress' | 'Resolved';
+}
+
